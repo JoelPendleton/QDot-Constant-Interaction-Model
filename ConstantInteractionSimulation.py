@@ -19,8 +19,8 @@ e = 1.6E-19
 V_SD_max = 0.1
 V_G_min = 0.0
 V_G_max = 0.5
-V_SD = np.linspace(- V_SD_max, V_SD_max, 1500)
-V_G = np.linspace(V_G_min, V_G_max, 1500)
+V_SD = np.linspace(- V_SD_max, V_SD_max, 1000)
+V_G = np.linspace(V_G_min, V_G_max, 1000)
 
 # Generate 2D array to represent possible voltage combinations
 
@@ -36,6 +36,7 @@ I_ground = np.zeros(V_SD_grid.shape)  # Define the ground transition current
 E_N_previous = 0 # stores previous E_N value
 V_G_start = 0 # start of current diamond
 diamond_starts = np.zeros((1,len(N))) # numpy array to store the store positions of each diamond along x-axis
+number_of_examples = 500
 
 def electricPotential(n, V_SD_grid, V_G_grid):
 
@@ -72,18 +73,18 @@ def currentChecker(mu_N):
     I_2 = (condition4 & condition5 & condition6).astype(int)
     return I_1 + I_2  # combine the result of these possibilities.
 
-for k in range(1,50):
+for k in range(1,number_of_examples+1):
 
     # seed random number generator
     seed(datetime.now())  # use current time as random number seed
 
-    C_S = 10E-19 * uniform(0.5, 1)  # Uniform used for some random variation
-    C_D = 10E-19 * uniform(0.5, 1)
-    C_G = 12E-18 * uniform(0.4, 1)
+    C_S = 10E-19 * uniform(0.1, 1)  # Uniform used for some random variation
+    C_D = 10E-19 * uniform(0.2, 1)
+    C_G = 12E-18 * uniform(0.1, 1)
     C = C_S + C_D + C_G
     E_C = (e ** 2) / C
 
-    fig1 = plt.figure()
+    fig1 = plt.figure(figsize=(10,10), dpi = 150)
 
     Estate_height_previous = 0  # stores previous various excited energy height above ground level
 
@@ -189,7 +190,7 @@ for k in range(1,50):
 
 
     I_tot_filter = random_noise(I_tot, mode='gaussian')
-    I_tot_filter = gaussian_filter(I_tot, sigma=5)  # Apply Gaussian Filter. The greater sigma the more blur.
+    I_tot_filter = gaussian_filter(I_tot, sigma=6)  # Apply Gaussian Filter. The greater sigma the more blur.
 
     # Plot diamonds
 
@@ -215,7 +216,7 @@ for k in range(1,50):
     positive_slope = C_G / (C_G + C_D)
     negative_slope = - C_G / C_S
 
-    fig2 = plt.figure()
+    fig2 = plt.figure(figsize=(10,10), dpi = 150)
 
     for i in range(len(N)-1):  # need -1 as block would attempt to access index N otherwise and it doesn't exist
         # positive grad. top-left
@@ -250,6 +251,7 @@ for k in range(1,50):
     plt.savefig("./Training_Output/output_{0}.png".format(k),bbox_inches='tight', pad_inches=0.0)
 
     plt.close()
+    print(k)
 
 
 
