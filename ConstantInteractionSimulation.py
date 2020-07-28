@@ -190,7 +190,7 @@ for k in range(1,number_of_examples+1):
 
 
     I_tot_filter = random_noise(I_tot, mode='gaussian')
-    I_tot_filter = gaussian_filter(I_tot, sigma=6)  # Apply Gaussian Filter. The greater sigma the more blur.
+    I_tot_filter = gaussian_filter(I_tot, sigma=3)  # Apply Gaussian Filter. The greater sigma the more blur.
 
     # Plot diamonds
 
@@ -207,8 +207,9 @@ for k in range(1,number_of_examples+1):
     #cb.ax.set_ylabel("$I$ (arb. units)", rotation=270, labelpad=20)
     #plt.title("Quantum Dot Simulation")
     plt.axis("off")
-
-    plt.savefig("./Training_Input/input_{0}.png".format(k),bbox_inches='tight', pad_inches=0.0)
+    plt.gca().xaxis.set_major_locator(plt.NullLocator())
+    plt.gca().yaxis.set_major_locator(plt.NullLocator())
+    plt.savefig("./Training_Input/input_{0}_1.png".format(k),bbox_inches='tight', pad_inches=0.0)
 
     plt.close()
     # Compute negative and positive slopes of diamonds for drawing edges
@@ -247,8 +248,9 @@ for k in range(1,number_of_examples+1):
     plt.ylim([-V_SD_max, V_SD_max])
     plt.xlim([V_G_min, V_G_max])
     plt.axis("off")
-
-    plt.savefig("./Training_Output/output_{0}.png".format(k),bbox_inches='tight', pad_inches=0.0)
+    plt.gca().xaxis.set_major_locator(plt.NullLocator())
+    plt.gca().yaxis.set_major_locator(plt.NullLocator())
+    plt.savefig("./Training_Output/output_{0}_1.png".format(k),bbox_inches='tight', pad_inches=0.0)
 
     plt.close()
     print(k)
