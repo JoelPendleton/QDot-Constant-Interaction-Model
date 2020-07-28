@@ -209,7 +209,7 @@ for k in range(1,number_of_examples+1):
     plt.axis("off")
     plt.gca().xaxis.set_major_locator(plt.NullLocator())
     plt.gca().yaxis.set_major_locator(plt.NullLocator())
-    plt.savefig("./Training_Input/input_{0}_1.png".format(k),bbox_inches='tight', pad_inches=0.0)
+    plt.savefig("./Training_Input/input_{0}.png".format(k),bbox_inches='tight', pad_inches=0.0)
 
     plt.close()
     # Compute negative and positive slopes of diamonds for drawing edges
@@ -250,7 +250,7 @@ for k in range(1,number_of_examples+1):
     plt.axis("off")
     plt.gca().xaxis.set_major_locator(plt.NullLocator())
     plt.gca().yaxis.set_major_locator(plt.NullLocator())
-    plt.savefig("./Training_Output/output_{0}_1.png".format(k),bbox_inches='tight', pad_inches=0.0)
+    plt.savefig("./Training_Output/output_{0}.png".format(k),bbox_inches='tight', pad_inches=0.0)
 
     plt.close()
     print(k)

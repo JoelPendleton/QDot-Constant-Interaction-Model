@@ -5,7 +5,9 @@ from imgaug import augmenters as iaa
 from PIL import Image
 from datetime import datetime
 
-import os, os.path
+import os
+import shutil
+
 
 path = 'Training_Input'
 num_files = len(os.listdir(path))
@@ -42,11 +44,12 @@ seq = iaa.Sequential([
 ], random_order=True) # apply augmenters in random order
 
 for i in range(num_files-1):
-    img = Image.open('Training_Input/input_{0}_1.png'.format(i+1)).convert('RGB')
+    img = Image.open('Training_Input/input_{0}.png'.format(i+1)).convert('RGB')
     img_array = np.array(img)
     ia.seed(int(datetime.utcnow().timestamp()))
     images = [img_array, img_array, img_array, img_array]
     images_aug = seq(images=images)
     for k in range(len(images_aug)):
         img_aug = Image.fromarray(np.uint8(images_aug[k]))
-        img_aug.save('Training_Input_Augmented/input_{0}_{1}.png'.format(i+1, k+2))
+        img_aug.save('Training_Input_Augmented/input_{0}.png'.format(num_files + k+1 + i))
+        shutil.copy("Training_Output/output_{0}.png".format(i+1), "Training_Output_Augmented/output_{0}.png".format(num_files + k+1 + i))
