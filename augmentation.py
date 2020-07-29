@@ -46,12 +46,14 @@ with progressbar.ProgressBar(max_value=num_files) as bar:
     for i in range(1,num_files+1):
         img = Image.open('Training_Input/input_{0}.png'.format(i)).convert('RGB')  # open image to augment
         img_array = np.array(img) # convert to array
+        img.close() # close img to free up memory
         ia.seed(int(datetime.utcnow().timestamp())) # generate random seed
         images = [img_array, img_array, img_array, img_array] # generate 4 augmented images
         images_aug = seq(images=images) # perform augmentation sequence on each of the images
         for k in range(1,len(images_aug)+1): # for each of the augmented images
             img_aug = Image.fromarray(np.uint8(images_aug[k-1]))  # convert to image
             img_aug.save('Training_Input_Augmented/input_{0}.png'.format(num_files + k + i)) # save augmented inout image
+            img_aug.close()
             shutil.copy("Training_Output/output_{0}.png".format(i), "Training_Output_Augmented/output_{0}.png".format(num_files + k + i))
             # copy training output for each of the augmented images
         bar.update(i-1)
