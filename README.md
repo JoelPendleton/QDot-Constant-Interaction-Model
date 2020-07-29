@@ -14,7 +14,7 @@ To generate training examples run the **generate_examples.py** script in the com
 * **-b** generates training examples and augmented versions of the training examples.
 for the **-t** and **-b** arguments you need to also pass another argument, the number of training examples you wish to generate.
 E.g. 
-    python generate_examples.py -t 100
+```python generate_examples.py -t 100```
 This generates 100 training examples.
 
 Example of simulation output:
