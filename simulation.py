@@ -5,7 +5,7 @@ from random import random  # random generates a random number between 0 and 1
 from random import uniform # generates random float between specified range
 from datetime import datetime
 import progressbar
-
+import sys
 
 # Define Constants
 N = range(1,8)
@@ -33,7 +33,7 @@ I_ground = np.zeros(V_SD_grid.shape)  # Define the ground transition current
 E_N_previous = 0 # stores previous E_N value
 V_G_start = 0 # start of current diamond
 diamond_starts = np.zeros((1,len(N))) # numpy array to store the store positions of each diamond along x-axis
-number_of_examples = 1000
+number_of_examples = int(sys.argv[1])
 
 def electricPotential(n, V_SD_grid, V_G_grid):
 
