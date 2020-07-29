@@ -6,6 +6,7 @@ from random import uniform # generates random float between specified range
 from datetime import datetime
 import progressbar
 import sys
+import os
 
 # Define Constants
 N = range(1,8)
@@ -69,6 +70,12 @@ def currentChecker(mu_N):
     I_1 = (condition1 & condition2 & condition3).astype(int)
     I_2 = (condition4 & condition5 & condition6).astype(int)
     return I_1 + I_2  # combine the result of these possibilities.
+
+
+if not os.path.exists("../Training Data/Training_Input"):
+    os.makedirs("../Training Data/Training_Input")
+if not os.path.exists("../Training Data/Training_Output"):
+    os.makedirs("../Training Data/Training_Output")
 
 
 with progressbar.ProgressBar(max_value=number_of_examples) as bar: # initialise progress bar
@@ -195,7 +202,7 @@ with progressbar.ProgressBar(max_value=number_of_examples) as bar: # initialise 
         plt.axis("off")
         plt.gca().xaxis.set_major_locator(plt.NullLocator())
         plt.gca().yaxis.set_major_locator(plt.NullLocator())
-        plt.savefig("./Training_Input/input_{0}.png".format(k),bbox_inches='tight', pad_inches=0.0)
+        plt.savefig("../Training Data/Training_Input/input_{0}.png".format(k),bbox_inches='tight', pad_inches=0.0)
         plt.close()
 
         # Compute negative and positive slopes of diamonds for drawing edges
@@ -235,7 +242,7 @@ with progressbar.ProgressBar(max_value=number_of_examples) as bar: # initialise 
         plt.axis("off")
         plt.gca().xaxis.set_major_locator(plt.NullLocator()) # trick found on stackex. when trying to get rid of padding
         plt.gca().yaxis.set_major_locator(plt.NullLocator())
-        plt.savefig("./Training_Output/output_{0}.png".format(k),bbox_inches='tight', pad_inches=0.0)
+        plt.savefig("../Training Data/Training_Output/output_{0}.png".format(k),bbox_inches='tight', pad_inches=0.0)
         plt.close()
 
         bar.update(k-1)
