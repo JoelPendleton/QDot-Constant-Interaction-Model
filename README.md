@@ -1,4 +1,4 @@
-# Quantum Dot Constant Interaction Model Simulation
+# Single Quantum Dot Simulation using the Constant Interaction Model 
 Software to simulate single quantum dot systems, using the constant interaction model. Theory of model is described in [Spins in few-electron quantum dots
 ](https://arxiv.org/pdf/cond-mat/0610433.pdf).
 
