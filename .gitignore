@@ -1,5 +1,6 @@
-Training_Input/
-Training_Output/
-Training_Input_Augmented/
-Training_Output_Augmented/
+Training Data/Training_Input/
+Training Data/Training_Output/
+Training Data/Training_Input_Augmented/
+Training Data/Training_Output_Augmented/
 .idea
+simulation_example.png
