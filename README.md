@@ -10,4 +10,4 @@ This code was developed to generate training data for an edge detector, which co
 
 Example of simulation output:
 
-![myImage](https://github.com/JoelPendleton/QDot-Constant-Interaction-Model/blob/master/simulation_example.png | width=50)
+<img src="https://github.com/JoelPendleton/QDot-Constant-Interaction-Model/blob/master/simulation_example.png " width="500">
