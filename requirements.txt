@@ -40,6 +40,7 @@ GitPython @ file:///tmp/build/80754af9/gitpython_1593441021322/work
 google-api-core==1.21.0
 google-auth==1.18.0
 googleapis-common-protos==1.52.0
+guppy3==3.0.10.post1
 h5py==2.10.0
 hickle==4.0.1
 hypothesis==5.5.4
