@@ -62,3 +62,6 @@ with progressbar.ProgressBar(max_value=num_files) as bar:
             shutil.copy("../Training Data/Training_Output/output_{0}.png".format(i), "../Training Data/Training_Output_Augmented/output_{0}.png".format(num_files + k + i))
             # copy training output for each of the augmented images
         bar.update(i-1)
+
+
+

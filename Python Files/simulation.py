@@ -14,9 +14,9 @@ N_0 = 0
 e = 1.6E-19
 
 # Define a 1D array for the values for the voltages
-V_SD_max = 0.1
-V_G_min = 0.0
-V_G_max = 0.4
+V_SD_max = 0.2
+V_G_min = 0.00
+V_G_max = 1.2
 V_SD = np.linspace(- V_SD_max, V_SD_max, 1000)
 V_G = np.linspace(V_G_min, V_G_max, 1000)
 
@@ -77,16 +77,14 @@ if not os.path.exists("../Training Data/Training_Input"):
 if not os.path.exists("../Training Data/Training_Output"):
     os.makedirs("../Training Data/Training_Output")
 
-
 with progressbar.ProgressBar(max_value=number_of_examples) as bar: # initialise progress bar
-
+    seed(datetime.now())  # use current time as random number seed
     for k in range(1,number_of_examples+1):
         # seed random number generator
-        seed(datetime.now())  # use current time as random number seed
 
         C_S = 10E-19 * uniform(0.1, 1)  # Uniform used for some random variation
         C_D = 10E-19 * uniform(0.2, 1)
-        C_G = 12E-18 * uniform(0.1, 1)
+        C_G = 1E-18 * uniform(1, 7)
         C = C_S + C_D + C_G
         E_C = (e ** 2) / C
 
@@ -194,7 +192,7 @@ with progressbar.ProgressBar(max_value=number_of_examples) as bar: # initialise 
         I_tot = I_tot / np.max(I_tot) # scale current values
 
         # Plot diamonds
-        contour = plt.contourf(V_G_grid,V_SD_grid, I_tot, cmap="seismic", levels = np.linspace(0,1,100)) # draw contours of diamonds
+        contour = plt.contourf(V_G_grid,V_SD_grid, I_tot, cmap="seismic", levels = np.linspace(0,1,500)) # draw contours of diamonds
         '''The extra diamonds arose out of the fact that there was a small number of contour levels added in 
         levels attribute to fix this so 0 current was grouped with the small current values '''
         plt.ylim([-V_SD_max, V_SD_max])
