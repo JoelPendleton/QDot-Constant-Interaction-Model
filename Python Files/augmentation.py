@@ -61,13 +61,16 @@ def generate():
             ia.seed(int(datetime.utcnow().timestamp())) # generate random seed
             images = [img_array, img_array, img_array, img_array] # generate 4 augmented images
             images_aug = seq(images=images) # perform augmentation sequence on each of the images
+            counter = 4
             for k in range(1,len(images_aug)+1): # for each of the augmented images
+                current_image_number = num_files + k  + counter * (i-1) # current augmented image number to be saved
                 img_aug = Image.fromarray(np.uint8(images_aug[k-1]))  # convert to image
-                img_aug.save('../Training Data/Training_Input_Augmented/input_{0}.png'.format(num_files + k + i)) # save augmented inout image
+                img_aug.save('../Training Data/Training_Input_Augmented/input_{0}.png'.format(current_image_number)) # save augmented inout image
                 img_aug.close()
-                shutil.copy("../Training Data/Training_Output/output_{0}.png".format(i), "../Training Data/Training_Output_Augmented/output_{0}.png".format(num_files + k + i))
+                shutil.copy("../Training Data/Training_Output/output_{0}.png".format(i), "../Training Data/Training_Output_Augmented/output_{0}.png".format(current_image_number))
                 # copy training output for each of the augmented images
             bar.update(i-1)
+
 
     return True
 

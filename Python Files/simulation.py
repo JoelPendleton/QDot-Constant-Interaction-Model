@@ -7,7 +7,6 @@ from datetime import datetime
 import progressbar
 import os
 
-
 def electricPotential(n, V_SD_grid, V_G_grid, E_C, N_0, e, C_S, C_G):
 
     """
