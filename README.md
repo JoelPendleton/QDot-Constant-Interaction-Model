@@ -20,5 +20,5 @@ This generates 100 training examples.
 
 Example of simulation output:
 
-<img src="https://raw.githubusercontent.com/JoelPendleton/QDot-Constant-Interaction-Model/master/simulation_example.png" width="500">
+<img src="https://github.com/JoelPendleton/QDot-Constant-Interaction-Model/blob/master/simulation_example.png" width="500">
 
