@@ -44,6 +44,7 @@ def currentChecker(mu_N, mu_S, V_SD):
     return I_1 + I_2  # combine the result of these possibilities.
 
 
+
 def generate(number_of_examples):
     """
     Function to generate training examples from simulator, calls upon above functions.
@@ -70,11 +71,7 @@ def generate(number_of_examples):
 
     mu_S = - e * V_SD  # source potential energy
 
-    I_tot = np.zeros(V_SD_grid.shape)  # Define the total current
-    I_ground = np.zeros(V_SD_grid.shape)  # Define the ground transition current
-    E_N_previous = 0  # stores previous E_N value
-    V_G_start = 0  # start of current diamond
-    diamond_starts = np.zeros((1, len(N)))  # numpy array to store the store positions of each diamond along x-axis
+
 
     if not os.path.exists("../Training Data/Training_Input"):
         os.makedirs("../Training Data/Training_Input")
@@ -84,6 +81,14 @@ def generate(number_of_examples):
     with progressbar.ProgressBar(max_value=number_of_examples) as bar: # initialise progress bar
 
         for k in range(1,number_of_examples+1):
+
+            I_tot = np.zeros(V_SD_grid.shape)  # Define the total current
+            I_ground = np.zeros(V_SD_grid.shape)  # Define the ground transition current
+            E_N_previous = 0  # stores previous E_N value
+            V_G_start = 0  # start of current diamond
+            diamond_starts = np.zeros(
+                (1, len(N)))  # numpy array to store the store positions of each diamond along x-axis
+
             seed(datetime.now())  # use current time as random number seed
 
             C_S = 10E-19 * uniform(0.1, 1)  # Uniform used for some random variation
@@ -105,6 +110,7 @@ def generate(number_of_examples):
 
                 # Indices where current can flow for  GS(N-1) -> GS(N) transitions
                 allowed_indices = current_ground = currentChecker(mu_N, mu_S, V_SD)
+                current_ground = current_ground * 10 ** (-7)
                 delta_E_N = E_N - E_N_previous  # Not sure on exact definition yet
                 delta_V_G = e/C_G + delta_E_N * C /(e *C_G) # Width of current diamond
 
@@ -122,7 +128,7 @@ def generate(number_of_examples):
                     random_current_transition1 = current_transition1 * uniform(0.5, 2)
                     '''random_current_transition1 adds some randomness to the current value'''
 
-                    I_tot += random_current_transition1
+                    I_tot += random_current_transition1  * 10 ** (-8)
 
                 elif n != 1:
                     V_G_start += delta_V_G  # update so start of current diamond
@@ -179,9 +185,9 @@ def generate(number_of_examples):
                     current_transition8 = currentChecker(mu_N_transition8, mu_S, V_SD)  # additional check if current can flow
                     random_current_transition8 = current_transition8 * uniform(0.2, 2)
 
-                    I_tot += random_current_transition1 + random_current_transition2 + random_current_transition3 + \
+                    I_tot += (random_current_transition1 + random_current_transition2 + random_current_transition3 + \
                              random_current_transition4 + random_current_transition5 + random_current_transition6 + \
-                             random_current_transition7 + random_current_transition8
+                             random_current_transition7 + random_current_transition8) * 10 ** (-8)
 
                 # If statement is used as only transition to ground state is allowed for N = 1 from ground state
 
@@ -193,10 +199,18 @@ def generate(number_of_examples):
                 Estate_height_previous = Estate_height
                 Lstate_height_previous = Lstate_height
 
-            I_tot = I_tot / np.max(I_tot) # scale current values
+            I_tot = I_tot
+            I_max = np.max(I_tot)
+            '''
+            noise = np.random.normal(loc=0, scale=1, size=V_SD_grid.shape)
+            k_B = 1.38064852 * 10 ** (-23)
+            g_0 = I_ground / V_SD_grid
+            T = 0.01
+            I_n = 10 * np.sqrt(4 * k_B * T * np.abs(g_0)) * noise
+            I_tot += I_n'''
 
             # Plot diamonds
-            plt.contourf(V_G_grid,V_SD_grid, I_tot, cmap="seismic", levels = np.linspace(0,1,500)) # draw contours of diamonds
+            plt.contourf(V_G_grid,V_SD_grid, I_tot, cmap="seismic", levels = np.linspace(0,I_max,500)) # draw contours of diamonds
             '''The extra diamonds arose out of the fact that there was a small number of contour levels added in 
             levels attribute to fix this so 0 current was grouped with the small current values '''
             plt.ylim([-V_SD_max, V_SD_max])
