@@ -19,7 +19,7 @@ E.g.
 This generates 100 training examples.
 
 
-<table>
+<table style="border: 0">
    <tr>
     <td>Example of generated input</td>
     <td>Corresponding edges of this example</td>
