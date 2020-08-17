@@ -18,7 +18,11 @@ E.g.
 ```python main.py --simulate 100```
 This generates 100 training examples.
 
-Example of simulation output:
+Example of generated input:
 
-<img src="https://github.com/JoelPendleton/QDot-Constant-Interaction-Model/blob/master/simulation_example.png" width="500">
+<img src="https://github.com/JoelPendleton/QDot-Constant-Interaction-Model/blob/master/simulation_example_input.png" width="500">
+
+Corresponding edges of this example:
+
+<img src="https://github.com/JoelPendleton/QDot-Constant-Interaction-Model/blob/master/simulation_example_output.png" width="500">
 
