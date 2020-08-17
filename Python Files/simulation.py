@@ -78,14 +78,14 @@ def generate(number_of_examples):
     mu_S = - e * V_SD  # source potential energy
 
 
-
     if not os.path.exists("../Training Data/Training_Input"):
         os.makedirs("../Training Data/Training_Input")
     if not os.path.exists("../Training Data/Training_Output"):
         os.makedirs("../Training Data/Training_Output")
 
-    with progressbar.ProgressBar(max_value=number_of_examples) as bar: # initialise progress bar
 
+
+    with progressbar.ProgressBar(max_value=number_of_examples) as bar: # initialise progress bar
         for k in range(1,number_of_examples+1):
 
             I_tot = np.zeros(V_SD_grid.shape)  # Define the total current

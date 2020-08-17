@@ -41,7 +41,7 @@ try:
             print("A TypeError error has occurred.\n"
                   "Make sure when you call the program with the flag --simulate or --both you also pass a number"
                   "\n - the number of training examples you want to generate.\n"
-                  "E.g. python generate_examples.py --t 1000\n"
+                  "E.g. python main.py --simulate 1000\n"
                   "This generates 1000 training examples.")
 
     elif generate_or_augment == "--augment":
@@ -66,3 +66,9 @@ except IndexError:
           "--both does the equivalent of --simulate followed by --augment\n"
           "\nFor the --simulate and --both flags you need to also pass another argument, the number of training examples"
           "\nyou wish to generate. For --augment no other arguments are required.")
+
+
+
+
+
+
