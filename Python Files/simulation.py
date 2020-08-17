@@ -7,6 +7,12 @@ from datetime import datetime
 import progressbar
 import os
 
+
+def calculate_current(V_SD, V_G):
+    V_SD_contribution = 6.706e-05 * V_SD ** 2 - 3.134e-07 * V_SD + 8.408e-10
+    V_G_contribution = 1.736e-06 * V_G ** 2 + 4.92e-09 * V_G - 6.035e-10
+    return V_SD_contribution + V_G_contribution
+
 def electricPotential(n, V_SD_grid, V_G_grid, E_C, N_0, e, C_S, C_G):
 
     """
@@ -59,7 +65,7 @@ def generate(number_of_examples):
     # Define a 1D array for the values for the voltages
     V_SD_max = 0.25
     V_G_min = 0.00
-    V_G_max = 1.4
+    V_G_max = 1
     V_SD = np.linspace(- V_SD_max, V_SD_max, 1000)
     V_G = np.linspace(V_G_min, V_G_max, 1000)
 
@@ -110,7 +116,7 @@ def generate(number_of_examples):
 
                 # Indices where current can flow for  GS(N-1) -> GS(N) transitions
                 allowed_indices = current_ground = currentChecker(mu_N, mu_S, V_SD)
-                current_ground = current_ground * 10 ** (-7)
+                current_ground = current_ground * calculate_current(V_SD_grid, V_G_grid)
                 delta_E_N = E_N - E_N_previous  # Not sure on exact definition yet
                 delta_V_G = e/C_G + delta_E_N * C /(e *C_G) # Width of current diamond
 
@@ -128,7 +134,7 @@ def generate(number_of_examples):
                     random_current_transition1 = current_transition1 * uniform(0.5, 2)
                     '''random_current_transition1 adds some randomness to the current value'''
 
-                    I_tot += random_current_transition1  * 10 ** (-8)
+                    I_tot += random_current_transition1 * calculate_current(V_SD_grid, V_G_grid) * 0.1
 
                 elif n != 1:
                     V_G_start += delta_V_G  # update so start of current diamond
@@ -187,7 +193,8 @@ def generate(number_of_examples):
 
                     I_tot += (random_current_transition1 + random_current_transition2 + random_current_transition3 + \
                              random_current_transition4 + random_current_transition5 + random_current_transition6 + \
-                             random_current_transition7 + random_current_transition8) * 10 ** (-8)
+                             random_current_transition7 + random_current_transition8) \
+                             * calculate_current(V_SD_grid, V_G_grid) * 0.1
 
                 # If statement is used as only transition to ground state is allowed for N = 1 from ground state
 
@@ -199,26 +206,36 @@ def generate(number_of_examples):
                 Estate_height_previous = Estate_height
                 Lstate_height_previous = Lstate_height
 
-            I_tot = I_tot
-            I_max = np.max(I_tot)
-            '''
-            noise = np.random.normal(loc=0, scale=1, size=V_SD_grid.shape)
+
+            not_allowed_current = np.logical_not(I_ground)
+
+            I_tot += 10e-9
+
+            noise = np.random.normal(loc=1, scale=1, size=V_SD_grid.shape)
             k_B = 1.38064852 * 10 ** (-23)
-            g_0 = I_ground / V_SD_grid
+            g_0 = I_tot / V_SD_grid
             T = 0.01
-            I_n = 10 * np.sqrt(4 * k_B * T * np.abs(g_0)) * noise
-            I_tot += I_n'''
+            I_n = np.sqrt(4 * k_B * T * np.abs(g_0)) * noise
+
+            print("\n\nMinimum current is",np.min(I_tot))
+            print("Maximum noise is",np.max(I_n))
+
+            I_tot += I_n
+            I_max = np.max(I_tot)
+            I_min = np.min(I_tot)
 
             # Plot diamonds
-            plt.contourf(V_G_grid,V_SD_grid, I_tot, cmap="seismic", levels = np.linspace(0,I_max,500)) # draw contours of diamonds
+            contour = plt.contourf(V_G_grid,V_SD_grid, I_tot, cmap="seismic", levels = np.linspace(I_min,I_max,500)) # draw contours of diamonds
             '''The extra diamonds arose out of the fact that there was a small number of contour levels added in 
             levels attribute to fix this so 0 current was grouped with the small current values '''
             plt.ylim([-V_SD_max, V_SD_max])
             plt.xlim([V_G_min, V_G_max])
-            plt.axis("off")
-            plt.gca().xaxis.set_major_locator(plt.NullLocator())
-            plt.gca().yaxis.set_major_locator(plt.NullLocator())
-            plt.savefig("../Training Data/Training_Input/input_{0}.png".format(k),bbox_inches='tight', pad_inches=0.0)
+            plt.xlabel("$V_{G}$ / V")
+            plt.ylabel("$V_{SD}$ / V")
+            plt.title("Single Quantum Dot Coulomb Blockade Simulation")
+            cbar = plt.colorbar(contour)
+            cbar.set_label("$I$ / A")
+            plt.savefig("../Training Data/Training_Input/input_{0}.png".format(k))
             plt.close()
 
             # Compute negative and positive slopes of diamonds for drawing edges
@@ -255,10 +272,9 @@ def generate(number_of_examples):
 
             plt.ylim([-V_SD_max, V_SD_max])
             plt.xlim([V_G_min, V_G_max])
-            plt.axis("off")
-            plt.gca().xaxis.set_major_locator(plt.NullLocator()) # trick found on stackex. when trying to get rid of padding
-            plt.gca().yaxis.set_major_locator(plt.NullLocator())
-            plt.savefig("../Training Data/Training_Output/output_{0}.png".format(k),bbox_inches='tight', pad_inches=0.0)
+            plt.xlabel("$V_{G}$ / V")
+            plt.ylabel("$V_{SD}$ / V")
+            plt.savefig("../Training Data/Training_Output/output_{0}.png".format(k))
             plt.close()
 
             bar.update(k-1) # update progress bar

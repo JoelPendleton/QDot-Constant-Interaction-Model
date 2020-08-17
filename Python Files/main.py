@@ -25,9 +25,9 @@ try:
                       "--simulate generates training examples\n"
                       "--augment generates more training examples by augmenting existing examples\n"
                       "--both does the equivalent of --simulate followed by --augment\n"
-                      "\nFor the -t and -b flags you need to also pass another argument, "
+                      "\nFor the --simulate and --both flags you need to also pass another argument, "
                       "the number of training examples"
-                      "\nyou wish to generate. For -a no other arguments are required.")
+                      "\nyou wish to generate. For --augment no other arguments are required.")
             print("Generating training data...")
             simulation.generate(number_of_examples)
 
@@ -64,5 +64,5 @@ except IndexError:
           "--simulate generates training examples\n"
           "--augment generates more training examples by augmenting existing examples\n"
           "--both does the equivalent of --simulate followed by --augment\n"
-          "\nFor the -t and -b flags you need to also pass another argument, the number of training examples"
-          "\nyou wish to generate. For -a no other arguments are required.")
+          "\nFor the --simulate and --both flags you need to also pass another argument, the number of training examples"
+          "\nyou wish to generate. For --augment no other arguments are required.")
