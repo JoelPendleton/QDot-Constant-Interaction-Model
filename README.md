@@ -18,12 +18,13 @@ E.g.
 ```python main.py --simulate 100```
 This generates 100 training examples.
 
+**Example of training example generated:**
 
 <table style="border: 0">
    <tbody>
       <tr style="border: 0">
-       <td style="border: 0">Example of generated input</td>
-       <td style="border: 0">Corresponding edges of this example</td>
+       <td style="border: 0">Input</td>
+       <td style="border: 0">Output</td>
      </tr> 
      <tr style="border: 0">
        <td style="border: 0"><img src="https://github.com/JoelPendleton/QDot-Constant-Interaction-Model/blob/master/simulation_example_input.png" width="500"></td>
