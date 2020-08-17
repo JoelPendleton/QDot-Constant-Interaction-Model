@@ -27,8 +27,8 @@ This generates 100 training examples.
        <td>Output</td>
      </tr> 
      <tr>
-       <td><img src="https://gitlab.com/QSD/dot-analysis-hub/QDot-Constant-Interaction-Model/-/blob/master/simulation_example_input.png" width="500"></td>
-       <td><img src="https://gitlab.com/QSD/dot-analysis-hub/QDot-Constant-Interaction-Model/-/blob/master/simulation_example_output.png" width="500"></td>
+       <td><img src="https://gitlab.com/QSD/dot-analysis-hub/QDot-Constant-Interaction-Model/-/raw/master/simulation_example_input.png" width="500"></td>
+       <td><img src="https://gitlab.com/QSD/dot-analysis-hub/QDot-Constant-Interaction-Model/-/raw/master/simulation_example_output.png" width="500"></td>
      </tr > 
   </tbody>
 </table>
