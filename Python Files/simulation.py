@@ -216,10 +216,6 @@ def generate(number_of_examples):
             g_0 = I_tot / V_SD_grid
             T = 0.01
             I_n = np.sqrt(4 * k_B * T * np.abs(g_0)) * noise
-
-            print("\n\nMinimum current is",np.min(I_tot))
-            print("Maximum noise is",np.max(I_n))
-
             I_tot += I_n
             I_max = np.max(I_tot)
             I_min = np.min(I_tot)
@@ -232,10 +228,17 @@ def generate(number_of_examples):
             plt.xlim([V_G_min, V_G_max])
             plt.xlabel("$V_{G}$ / V")
             plt.ylabel("$V_{SD}$ / V")
-            plt.title("Single Quantum Dot Coulomb Blockade Simulation")
-            cbar = plt.colorbar(contour)
-            cbar.set_label("$I$ / A")
-            plt.savefig("../Training Data/Training_Input/input_{0}.png".format(k))
+
+            ##plt.title("Single Quantum Dot Coulomb Blockade Simulation")
+            #cbar = plt.colorbar(contour)
+            #cbar.set_label("$I$ / A")
+
+            plt.axis("off")
+            plt.gca().xaxis.set_major_locator(plt.NullLocator()) # trick found on stackex. when trying to get rid of padding
+            plt.gca().yaxis.set_major_locator(plt.NullLocator())
+            plt.ylim([-V_SD_max, V_SD_max])
+
+            plt.savefig("../Training Data/Training_Input/input_{0}.png".format(k), bbox_inches='tight', pad_inches=0.0)
             plt.close()
 
             # Compute negative and positive slopes of diamonds for drawing edges
@@ -269,12 +272,16 @@ def generate(number_of_examples):
                 y_values = [y_final, 0]
                 plt.plot(x_values, y_values, '-k')
 
-
+            plt.axis("off")
+            plt.gca().xaxis.set_major_locator(plt.NullLocator()) # trick found on stackex. when trying to get rid of padding
+            plt.gca().yaxis.set_major_locator(plt.NullLocator())
             plt.ylim([-V_SD_max, V_SD_max])
             plt.xlim([V_G_min, V_G_max])
-            plt.xlabel("$V_{G}$ / V")
-            plt.ylabel("$V_{SD}$ / V")
-            plt.savefig("../Training Data/Training_Output/output_{0}.png".format(k))
+
+            #plt.xlabel("$V_{G}$ / V")
+            #plt.ylabel("$V_{SD}$ / V")
+
+            plt.savefig("../Training Data/Training_Output/output_{0}.png".format(k), bbox_inches='tight', pad_inches=0.0)
             plt.close()
 
             bar.update(k-1) # update progress bar
