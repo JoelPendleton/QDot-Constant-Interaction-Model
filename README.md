@@ -22,9 +22,10 @@ This generates 100 training examples.
 <table>
   <tr>
     <td><img src="https://github.com/JoelPendleton/QDot-Constant-Interaction-Model/blob/master/simulation_example_input.png" width="500"></td>
+    <td><img src="https://github.com/JoelPendleton/QDot-Constant-Interaction-Model/blob/master/simulation_example_output.png" width="500"></td>
   </tr> 
   <tr>
-      <td><img src="https://github.com/JoelPendleton/QDot-Constant-Interaction-Model/blob/master/simulation_example_output.png" width="500"></td>
+      
   </tr>
 </table>
 
