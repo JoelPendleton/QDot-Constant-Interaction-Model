@@ -20,20 +20,14 @@ This generates 100 training examples.
 
 
 <table>
+   <tr>
+    <td>Example of generated input</td>
+    <td>Corresponding edges of this example</td>
+  </tr> 
   <tr>
     <td><img src="https://github.com/JoelPendleton/QDot-Constant-Interaction-Model/blob/master/simulation_example_input.png" width="500"></td>
     <td><img src="https://github.com/JoelPendleton/QDot-Constant-Interaction-Model/blob/master/simulation_example_output.png" width="500"></td>
   </tr> 
-  <tr>
-      
-  </tr>
 </table>
 
-Example of generated input:
-
-<img src="https://github.com/JoelPendleton/QDot-Constant-Interaction-Model/blob/master/simulation_example_input.png" width="500">
-
-Corresponding edges of this example:
-
-<img src="https://github.com/JoelPendleton/QDot-Constant-Interaction-Model/blob/master/simulation_example_output.png" width="500">
 
