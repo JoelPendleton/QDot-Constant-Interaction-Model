@@ -20,15 +20,15 @@ This generates 100 training examples.
 
 **Example of training example generated:**
 
-<table style="border: 0">
+<table>
    <tbody>
-      <tr style="border: 0">
-       <td style="border: 0">Input</td>
-       <td style="border: 0">Output</td>
+      <tr>
+       <td>Input</td>
+       <td>Output</td>
      </tr> 
-     <tr style="border: 0">
-       <td style="border: 0"><img src="https://github.com/JoelPendleton/QDot-Constant-Interaction-Model/blob/master/simulation_example_input.png" width="500"></td>
-       <td style="border: 0"><img src="https://github.com/JoelPendleton/QDot-Constant-Interaction-Model/blob/master/simulation_example_output.png" width="500"></td>
+     <tr>
+       <td><img src="https://github.com/JoelPendleton/QDot-Constant-Interaction-Model/blob/master/simulation_example_input.png" width="500"></td>
+       <td><img src="https://github.com/JoelPendleton/QDot-Constant-Interaction-Model/blob/master/simulation_example_output.png" width="500"></td>
      </tr > 
   </tbody>
 </table>
