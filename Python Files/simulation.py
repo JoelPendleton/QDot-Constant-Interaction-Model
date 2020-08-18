@@ -6,12 +6,28 @@ from random import uniform # generates random float between specified range
 from datetime import datetime
 import progressbar
 import os
+import sys
 
 
-def calculate_current(V_SD, V_G):
-    V_SD_contribution = 6.706e-05 * V_SD ** 2 - 3.134e-07 * V_SD + 8.408e-10
-    V_G_contribution = 1.736e-06 * V_G ** 2 + 4.92e-09 * V_G - 6.035e-10
-    return V_SD_contribution + V_G_contribution
+def calculate_current(V_SD, V_G, mu_N):
+    e = 1.6E-19
+    h = 6.626E-34
+    k_B = 8.6173E-5
+    T = 0.1
+    R_K = h / (e **2)
+    R_T =  1/( V_G ** 2)
+
+    deltaE = mu_N/e -  V_SD
+    gammaPlus = - (deltaE / h) * (R_K / R_T) / (1 - np.exp(deltaE / (k_B * T)))
+    #plt.plot(V_G[:,200], deltaE[200,:])
+    #plt.show()
+    sys.exit("finished")
+
+    deltaE = mu_N/e
+    gammaNegative =  (deltaE / h) * (R_K / R_T) / (1 - np.exp(- deltaE / (k_B * T)))
+    current = e * gammaPlus * gammaNegative / (gammaPlus + gammaNegative)
+
+    return current
 
 def electricPotential(n, V_SD_grid, V_G_grid, E_C, N_0, e, C_S, C_G):
 
@@ -23,9 +39,9 @@ def electricPotential(n, V_SD_grid, V_G_grid, E_C, N_0, e, C_S, C_G):
     :return: The Electric Potential for adding the nth electron to the dot
     """
 
-    E_N = E_C*(((n)**2-(n-1)**2)/n*5+random()/9*n)  # arbitrary random formula used to increase diamond width as more electrons are added
+    E_N = E_C*(((n)**2-(n-1)**2)/n*5+random()/9*n)/(10*n)  # arbitrary random formula used to increase diamond width as more electrons are added
 
-    return E_N, (n - N_0 - 1/2) * E_C - (E_C / e) * (C_S * V_SD_grid + C_G * V_G_grid) + E_N
+    return E_N, (n - N_0 - 1/2) * E_C - (E_C / e) * (C_S * V_SD_grid + C_G * V_G_grid) #+ E_N
 
 
 def currentChecker(mu_N, mu_S, V_SD):
@@ -58,14 +74,15 @@ def generate(number_of_examples):
     :return: returns True when finished
     """
     # Define Constants
-    N = range(1, 8)
+    N = range(1, 11)
     N_0 = 0
     e = 1.6E-19
 
     # Define a 1D array for the values for the voltages
-    V_SD_max = 0.25
-    V_G_min = 0.00
-    V_G_max = 1
+    # Define a 1D array for the values for the voltages
+    V_SD_max = 0.1
+    V_G_min = 0.03
+    V_G_max = 1.5
     V_SD = np.linspace(- V_SD_max, V_SD_max, 1000)
     V_G = np.linspace(V_G_min, V_G_max, 1000)
 
@@ -113,10 +130,9 @@ def generate(number_of_examples):
 
                 # potential energy of ground to ground transition GS(N-1) -> GS(N)
                 E_N, mu_N = electricPotential(n, V_SD_grid, V_G_grid, E_C, N_0, e, C_S, C_G)
-
                 # Indices where current can flow for  GS(N-1) -> GS(N) transitions
                 allowed_indices = current_ground = currentChecker(mu_N, mu_S, V_SD)
-                current_ground = current_ground * calculate_current(V_SD_grid, V_G_grid)
+                current_ground = current_ground * calculate_current(V_SD_grid, V_G_grid, mu_N)
                 delta_E_N = E_N - E_N_previous  # Not sure on exact definition yet
                 delta_V_G = e/C_G + delta_E_N * C /(e *C_G) # Width of current diamond
 
@@ -134,7 +150,7 @@ def generate(number_of_examples):
                     random_current_transition1 = current_transition1 * uniform(0.5, 2)
                     '''random_current_transition1 adds some randomness to the current value'''
 
-                    I_tot += random_current_transition1 * calculate_current(V_SD_grid, V_G_grid) * 0.1
+                    I_tot += random_current_transition1 * calculate_current(V_SD_grid, V_G_grid, mu_N) * 0.1
 
                 elif n != 1:
                     V_G_start += delta_V_G  # update so start of current diamond
@@ -194,7 +210,7 @@ def generate(number_of_examples):
                     I_tot += (random_current_transition1 + random_current_transition2 + random_current_transition3 + \
                              random_current_transition4 + random_current_transition5 + random_current_transition6 + \
                              random_current_transition7 + random_current_transition8) \
-                             * calculate_current(V_SD_grid, V_G_grid) * 0.1
+                             * calculate_current(V_SD_grid, V_G_grid, mu_N) * 0.1
 
                 # If statement is used as only transition to ground state is allowed for N = 1 from ground state
 
@@ -207,16 +223,22 @@ def generate(number_of_examples):
                 Lstate_height_previous = Lstate_height
 
 
-            not_allowed_current = np.logical_not(I_ground)
 
             I_tot += 10e-9
 
-            noise = np.random.normal(loc=1, scale=1, size=V_SD_grid.shape)
+            thermaNoise = np.random.normal(loc=1, scale=1, size=V_SD_grid.shape)
             k_B = 1.38064852 * 10 ** (-23)
             g_0 = I_tot / V_SD_grid
             T = 0.01
-            I_n = np.sqrt(4 * k_B * T * np.abs(g_0)) * noise
-            I_tot += I_n
+            I_thermalNoise = np.sqrt(4 * k_B * T * np.abs(g_0)) * thermaNoise
+            I_tot += I_thermalNoise
+
+            chargeNoise = np.random.normal(loc=1, scale=1, size=V_SD_grid.shape)
+            delta_f = 1000 # bandwidth
+            I_chargeNoise = np.sqrt(2 * e * I_tot * delta_f) * chargeNoise
+            I_tot += I_chargeNoise
+
+
             I_max = np.max(I_tot)
             I_min = np.min(I_tot)
 
