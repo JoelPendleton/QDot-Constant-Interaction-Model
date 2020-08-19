@@ -239,7 +239,7 @@ class QuantumDot:
         V_G_start = 0  # start of current diamond
 
         'Charge noise implementation'
-        alpha = 1E-6 * (self.C_G / self.C)
+        alpha = 1E-2 * (self.C_G / self.C)
         chargeNoise = np.random.normal(loc=0, scale=alpha, size=QuantumDot.V_SD_grid.shape)
         noisy_V_G_grid = QuantumDot.V_G_grid + chargeNoise
 
@@ -332,13 +332,15 @@ class QuantumDot:
             Estate_height_previous = Estate_height
             Lstate_height_previous = Lstate_height
 
-        thermaNoise = np.random.normal(loc=0, scale=1, size=QuantumDot.V_SD_grid.shape)
+        'Thermal noise implementation'
+        thermalNoise = np.random.normal(loc=0, scale=1, size=QuantumDot.V_SD_grid.shape)
         k_B = 8.6173E-5 * QuantumDot.e
         g_0 = self.I_tot / noisy_V_G_grid
         T = 0.01
-        I_thermalNoise = np.sqrt(4 * k_B * T * np.abs(g_0)) * thermaNoise
+        I_thermalNoise = np.sqrt(4 * k_B * T * np.abs(g_0)) * thermalNoise
         self.I_tot += I_thermalNoise
 
+        'SHOT noise implementation'
         shotNoise = np.random.normal(loc=0, scale=1, size=QuantumDot.V_SD_grid.shape)
         delta_f = 1000  # bandwidth
         I_shotNoise = np.sqrt(2 * QuantumDot.e * np.abs(self.I_tot) * delta_f) * shotNoise
