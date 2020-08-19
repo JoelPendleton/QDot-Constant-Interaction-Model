@@ -1,6 +1,13 @@
+# -----------------------------------------------------------
+# Single Quantum Dot Simulator that is used to Generate Training Examples for a CNN.
+#
+# (C) 2020 Joel Pendleton, London, UK
+# Released under MIT license
+# email joel.pendleton@quantummotion.tech
+# -----------------------------------------------------------
+
 import helper
 import sys
-
 
 try:
 
@@ -65,9 +72,3 @@ except IndexError:
           "--both does the equivalent of --simulate followed by --augment\n"
           "\nFor the --simulate and --both flags you need to also pass another argument, the number of training examples"
           "\nyou wish to generate. For --augment no other arguments are required.")
-
-
-
-
-
-
