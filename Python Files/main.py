@@ -1,6 +1,6 @@
-import simulation
-import augmentation
+import helper
 import sys
+
 
 try:
 
@@ -29,11 +29,11 @@ try:
                       "the number of training examples"
                       "\nyou wish to generate. For --augment no other arguments are required.")
             print("Generating training data...")
-            simulation.generate(number_of_examples)
+            helper.generate(number_of_examples)
 
             if generate_or_augment == "--both":
                 print("Augmenting training data...")
-                augmentation.generate()
+                helper.augment()
 
 
         except TypeError:
@@ -46,8 +46,7 @@ try:
 
     elif generate_or_augment == "--augment":
         print("Augmenting training data...")
-        augmentation.generate()
-
+        helper.augment()
     else:
         print("Make sure when you call this file you pass one of the following flags as your first argument.\n"
               "--simulate generates training examples\n"

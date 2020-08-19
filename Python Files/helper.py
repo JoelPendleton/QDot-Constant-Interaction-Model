@@ -1,17 +1,35 @@
+from simulation import QuantumDot
 import numpy as np
 import imgaug as ia
 from imgaug import augmenters as iaa
-from PIL import Image
 from datetime import datetime
+from PIL import Image
 import progressbar
-import os
 import shutil
+import os
 
-
-def generate():
+def generate(number_of_examples):
     """
-    Function to generate augmented versions of each of the training examples
-    :return: True when finished
+    Function to generate training examples from simulation objects.
+
+    Parameters:
+        number_of_examples (int): number of training examples to generate.
+
+    Returns: True upon completion
+   """
+
+    with progressbar.ProgressBar(max_value=number_of_examples) as bar:  # initialise progress bar
+        for k in range(1, number_of_examples + 1):
+            current_simulaton = QuantumDot()
+            current_simulaton.simulate(k)
+            bar.update(k)  # update progress bar
+    return True
+
+def augment():
+    """
+    Function to generate 4 augmented versions of each of the training examples
+    Returns:
+        True upon completion
     """
 
     path = '../Training Data/Training_Input'
@@ -71,7 +89,4 @@ def generate():
                 # copy training output for each of the augmented images
             bar.update(i-1)
 
-
     return True
-
-

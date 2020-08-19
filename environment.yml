@@ -1,4 +1,4 @@
-name: qcodes
+name: qdot-simulation
 channels:
   - conda-forge
   - defaults
