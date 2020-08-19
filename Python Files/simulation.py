@@ -274,53 +274,45 @@ class QuantumDot:
 
                 # potential energy of ground to excited transition GS(N-1) -> ES(N)
                 mu_N_transition1 = mu_N + Estate_height
-                mu_N_transition1 = np.multiply(mu_N_transition1, allowed_indices)
                 current_transition1 = self.calculate_current(QuantumDot.V_SD_grid, noisy_V_G_grid, mu_N_transition1)
                 random_current_transition1 = current_transition1 * uniform(0.2, 2)
 
                 # potential energy of excited to ground transition GS(N-1) -> LS(N)
                 mu_N_transition2 = mu_N + Lstate_height
-                mu_N_transition2 = np.multiply(mu_N_transition2, allowed_indices)
                 current_transition2 =self.calculate_current(QuantumDot.V_SD_grid, noisy_V_G_grid, mu_N_transition2)
                 random_current_transition2 = current_transition2 * uniform(0.2, 2)
 
                 # potential energy of excited to ground transition ES(N-1) -> GS(N)
                 mu_N_transition3 = mu_N - Estate_height_previous
-                mu_N_transition3 = np.multiply(mu_N_transition3, allowed_indices)
                 current_transition3 = self.calculate_current(QuantumDot.V_SD_grid, noisy_V_G_grid, mu_N_transition3)
                 random_current_transition3 = current_transition3 * uniform(0.2, 2)
 
                 # potential energy of excited to ground transition ES(N-1) -> ES(N)
                 mu_N_transition4 = mu_N - Estate_height_previous + Estate_height
-                mu_N_transition4 = np.multiply(mu_N_transition4, allowed_indices)
                 current_transition4 = self.calculate_current(QuantumDot.V_SD_grid, noisy_V_G_grid, mu_N_transition4)
                 random_current_transition4 = current_transition4 * uniform(0.2, 2)
 
                 # potential energy of excited to ground transition ES(N-1) -> LS(N)
                 mu_N_transition5 = mu_N - Estate_height_previous + Lstate_height
-                mu_N_transition5 = np.multiply(mu_N_transition5, allowed_indices)
                 current_transition5 = self.calculate_current(QuantumDot.V_SD_grid, noisy_V_G_grid, mu_N_transition5)
                 random_current_transition5 = current_transition5 * uniform(0.2, 2)
 
                 # potential energy of excited to ground transition LS(N-1) -> GS(N)
                 mu_N_transition6 = mu_N - Lstate_height_previous
-                mu_N_transition6 = np.multiply(mu_N_transition6, allowed_indices)
                 current_transition6 = self.calculate_current(QuantumDot.V_SD_grid, noisy_V_G_grid, mu_N_transition6)
                 random_current_transition6 = current_transition6 * uniform(0.2, 2)
 
                 # potential energy of excited to ground transition LS(N-1) -> ES(N)
                 mu_N_transition7 = mu_N - Lstate_height_previous + Estate_height
-                mu_N_transition7 = np.multiply(mu_N_transition7, allowed_indices)
                 current_transition7 = self.calculate_current(QuantumDot.V_SD_grid, noisy_V_G_grid, mu_N_transition7)
                 random_current_transition7 = current_transition7 * uniform(0.2, 2)
 
                 # potential energy of excited to ground transition LS(N-1) -> LS(N)
                 mu_N_transition8 = mu_N - Lstate_height_previous + Lstate_height
-                mu_N_transition8 = np.multiply(mu_N_transition8, allowed_indices)
                 current_transition8 = self.calculate_current(QuantumDot.V_SD_grid, noisy_V_G_grid, mu_N_transition8)
                 random_current_transition8 = current_transition8 * uniform(0.2, 2)
 
-                self.I_tot += (random_current_transition1 + random_current_transition2 + random_current_transition3 + \
+                self.I_tot += np.multiply(allowed_indices, random_current_transition1 + random_current_transition2 + random_current_transition3 + \
                           random_current_transition4 + random_current_transition5 + random_current_transition6 + \
                           random_current_transition7 + random_current_transition8) * 0.1
 
@@ -411,3 +403,27 @@ class QuantumDot:
 
         return True
 
+'''
+dot_1 = QuantumDot()
+dot_1.simulate(69)
+current = dot_1.I_tot
+
+z_grady, z_gradx = np.gradient(current)
+
+plt.figure()
+# Plot diamonds
+plt.contourf(dot_1.V_G_grid, dot_1.V_SD_grid, np.abs(z_grady), cmap="seismic",
+             levels=np.linspace(np.min(z_grady), np.max(z_grady), 1000))  # draw contours of diamonds
+
+plt.ylim([-dot_1.V_SD_max, dot_1.V_SD_max])
+plt.xlim([dot_1.V_G_min, dot_1.V_G_max])
+plt.show()
+
+plt.figure()
+# Plot diamonds
+plt.contourf(dot_1.V_G_grid, dot_1.V_SD_grid, np.abs(z_gradx), cmap="seismic",
+             levels=np.linspace(np.min(z_gradx), np.max(z_gradx), 1000))  # draw contours of diamonds
+
+plt.ylim([-dot_1.V_SD_max, dot_1.V_SD_max])
+plt.xlim([dot_1.V_G_min, dot_1.V_G_max])
+plt.show()'''
