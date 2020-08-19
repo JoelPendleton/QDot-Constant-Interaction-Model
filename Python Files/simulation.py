@@ -238,12 +238,12 @@ class QuantumDot:
         Estate_height_previous = 0  # stores previous various excited energy height above ground level
         V_G_start = 0  # start of current diamond
 
-        'Charge noise implementation'
-        alpha = 1E-2 * (self.C_G / self.C)
-        chargeNoise = np.random.normal(loc=0, scale=alpha, size=QuantumDot.V_SD_grid.shape)
-        noisy_V_G_grid = QuantumDot.V_G_grid + chargeNoise
-
         for n in self.N:
+
+            'Charge noise implementation'
+            alpha = 1E-2 * (self.C_G / self.C)
+            chargeNoise = np.random.normal(loc=0, scale=alpha, size=QuantumDot.V_SD_grid.shape)
+            noisy_V_G_grid = QuantumDot.V_G_grid + chargeNoise
 
             Estate_height = uniform(0.1, 0.5) * self.E_C
             Lstate_height = uniform(0.5, 0.8) * self.E_C
