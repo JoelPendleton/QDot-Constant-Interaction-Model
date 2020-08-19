@@ -6,7 +6,6 @@
 # email joel.pendleton@quantummotion.tech
 # -----------------------------------------------------------
 
-
 import numpy as np
 import matplotlib.pyplot as plt
 from random import seed # generates seed for random number generator
