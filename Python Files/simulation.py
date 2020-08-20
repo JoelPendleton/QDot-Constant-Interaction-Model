@@ -50,6 +50,8 @@ class QuantumDot:
     # Generate 2D array to represent possible voltage combinations
     V_SD_grid, V_G_grid = np.meshgrid(V_SD, V_G)
 
+    mu_S = - e * V_SD_grid  # source electrochemical potential energy
+
     def __init__(self):
         """
        The constructor for QuantumDot class.
@@ -98,6 +100,30 @@ class QuantumDot:
         mu_N = (n - self.N_0 - 1 / 2) * self.E_C - (self.E_C / QuantumDot.e) * (self.C_S * QuantumDot.V_SD_grid + self.C_G * QuantumDot.V_G_grid) + E_N
 
         return E_N, mu_N
+
+    def currentChecker(self, mu_N):
+        """
+        Function to determne region where current is allowed to flow and where there is a blockade.
+        Finds indexes corresponding to values of V_SD and V_G for which current can flow from source-drain or drain-source.
+
+         Parameters:
+            n (int): number of electrons currently in the system / quantum dot.
+
+        :param mu_N: The electric potential to add the Nth electron to the system.
+        :return: The Total allowed current across the grid of voltages. It is either 0, 1, or 2 (units and additive effects of different levels not considered)
+        """
+        # the algorithm below looks contrived but it removes the need for for loops increasing runtime
+        # it checks whether the potential energy of the electron state is between the source and drain
+        condition1 = mu_N > 0
+        condition2 = mu_N < QuantumDot.mu_S
+        condition3 = QuantumDot.V_SD_grid < 0
+        condition4 = mu_N < 0
+        condition5 = mu_N > QuantumDot.mu_S
+        condition6 = QuantumDot.V_SD_grid > 0
+        # Consider both scenarios where mu_D < mu_N < mu_S and mu_S < mu_N < mu_D
+        I_1 = (condition1 & condition2 & condition3).astype(int)
+        I_2 = (condition4 & condition5 & condition6).astype(int)
+        return np.logical_or(I_1, I_2)  # combine the result of these possibilities.
 
     def calculate_current(self, V_SD, V_G, mu_N):
 
@@ -251,7 +277,7 @@ class QuantumDot:
             E_N, mu_N = self.electricPotential(n)
             # Indices where current can flow for  GS(N-1) -> GS(N) transitions
             current_ground = self.calculate_current(QuantumDot.V_SD_grid, noisy_V_G_grid, mu_N)
-            allowed_indices = current_ground != 0
+            allowed_indices = self.currentChecker(mu_N)
 
             delta_E_N = E_N - E_N_previous
             delta_V_G = QuantumDot.e / self.C_G + delta_E_N * self.C / (QuantumDot.e * self.C_G)  # Width of current diamond
@@ -325,10 +351,8 @@ class QuantumDot:
 
         'Thermal noise implementation'
         thermalNoise = np.random.normal(loc=0, scale=1, size=QuantumDot.V_SD_grid.shape)
-        k_B = 8.6173E-5 * QuantumDot.e
         g_0 = self.I_tot / noisy_V_G_grid
-        T = 0.01
-        I_thermalNoise = np.sqrt(4 * k_B * T * np.abs(g_0)) * thermalNoise
+        I_thermalNoise = np.sqrt(4 * QuantumDot.k_B * QuantumDot.T * np.abs(g_0)) * thermalNoise
         self.I_tot += I_thermalNoise
 
         'SHOT noise implementation'
@@ -402,7 +426,7 @@ class QuantumDot:
 
         return True
 
-'''
+
 dot_1 = QuantumDot()
 dot_1.simulate(69)
 current = dot_1.I_tot
@@ -425,4 +449,4 @@ plt.contourf(dot_1.V_G_grid, dot_1.V_SD_grid, np.abs(z_gradx), cmap="seismic",
 
 plt.ylim([-dot_1.V_SD_max, dot_1.V_SD_max])
 plt.xlim([dot_1.V_G_min, dot_1.V_G_max])
-plt.show()'''
+plt.show()
