@@ -13,8 +13,6 @@ from random import random  # random generates a random number between 0 and 1
 from random import uniform # generates random float between specified range
 from random import randint
 from datetime import datetime
-import os
-
 
 class QuantumDot:
 
@@ -41,7 +39,7 @@ class QuantumDot:
     h = 4.1357E-15
     k_B = 8.6173E-5
     T = 0.01
-    V_SD_max = 0.1
+    V_SD_max = 0.2
     V_G_min = 0.005
     V_G_max = 1.2
     V_SD = np.linspace(- V_SD_max, V_SD_max, 1000)
@@ -70,15 +68,15 @@ class QuantumDot:
        """
         QuantumDot.simCount += 1
         seed(datetime.now())  # use current time as random number seed
-        self.N = range(1, randint(4, 15))
+        self.N = range(1, randint(3, 20))
         self.N_0 = 0
-        self.I_tot = np.zeros(QuantumDot.V_SD_grid.shape)
+        self.I_tot = np.zeros(self.V_SD_grid.shape)
         self.diamond_starts = np.zeros((1, len(self.N)))
         self.C_S = 10E-19 * uniform(0.1, 1)  # Uniform used for some random variation
         self.C_D = 10E-19 * uniform(0.2, 1)
         self.C_G = 1E-18 * uniform(1, 7)
         self.C = self.C_S + self.C_D + self.C_G
-        self.E_C = (QuantumDot.e ** 2) / self.C
+        self.E_C = (self.e ** 2) / self.C
 
 
     def electricPotential(self, n):
@@ -97,32 +95,33 @@ class QuantumDot:
         # arbitrary formula used to increase diamond width as more electrons are added
         E_N = self.E_C * (((n) ** 2 - (n - 1) ** 2) / n * 5 + random() / 9 * n)
 
-        mu_N = (n - self.N_0 - 1 / 2) * self.E_C - (self.E_C / QuantumDot.e) * (self.C_S * QuantumDot.V_SD_grid + self.C_G * QuantumDot.V_G_grid) + E_N
+        mu_N = (n - self.N_0 - 1 / 2) * self.E_C - (self.E_C / self.e) * (self.C_S * self.V_SD_grid + self.C_G * self.V_G_grid) + E_N
 
         return E_N, mu_N
 
     def currentChecker(self, mu_N):
+
         """
         Function to determne region where current is allowed to flow and where there is a blockade.
         Finds indexes corresponding to values of V_SD and V_G for which current can flow from source-drain or drain-source.
 
-         Parameters:
-            n (int): number of electrons currently in the system / quantum dot.
+        Parameters:
+            mu_N (float): the electrochemical potential of the transition.
 
-        :param mu_N: The electric potential to add the Nth electron to the system.
-        :return: The Total allowed current across the grid of voltages. It is either 0, 1, or 2 (units and additive effects of different levels not considered)
+        Returns:
+            Matrix of booleans. True corresponds to position of allowed current flow, False corresponds to no current flow.
         """
         # the algorithm below looks contrived but it removes the need for for loops increasing runtime
         # it checks whether the potential energy of the electron state is between the source and drain
         condition1 = mu_N > 0
-        condition2 = mu_N < QuantumDot.mu_S
-        condition3 = QuantumDot.V_SD_grid < 0
+        condition2 = mu_N < self.mu_S
+        condition3 = self.V_SD_grid < 0
         condition4 = mu_N < 0
-        condition5 = mu_N > QuantumDot.mu_S
-        condition6 = QuantumDot.V_SD_grid > 0
+        condition5 = mu_N > self.mu_S
+        condition6 = self.V_SD_grid > 0
         # Consider both scenarios where mu_D < mu_N < mu_S and mu_S < mu_N < mu_D
-        I_1 = (condition1 & condition2 & condition3).astype(int)
-        I_2 = (condition4 & condition5 & condition6).astype(int)
+        I_1 = (condition1 & condition2 & condition3)
+        I_2 = (condition4 & condition5 & condition6)
         return np.logical_or(I_1, I_2)  # combine the result of these possibilities.
 
     def calculate_current(self, V_SD, V_G, mu_N):
@@ -252,46 +251,43 @@ class QuantumDot:
             True upon completion
         """
 
-        if not os.path.exists("../Training Data/Training_Input"):
-            os.makedirs("../Training Data/Training_Input")
-        if not os.path.exists("../Training Data/Training_Output"):
-            os.makedirs("../Training Data/Training_Output")
-
         plt.figure(figsize=(10, 10), dpi=150)
 
         E_N_previous = 0
         Estate_height_previous = 0  # stores previous various excited energy height above ground level
         V_G_start = 0  # start of current diamond
+        allowed_indices = np.zeros(self.V_SD_grid.shape)
+        I_ground = np.zeros(self.V_SD_grid.shape)
+        I_excited = np.zeros(self.V_SD_grid.shape)
 
         for n in self.N:
 
             'Charge noise implementation'
-            alpha = 1E-2 * (self.C_G / self.C)
-            chargeNoise = np.random.normal(loc=0, scale=alpha, size=QuantumDot.V_SD_grid.shape)
-            noisy_V_G_grid = QuantumDot.V_G_grid + chargeNoise
+            alpha = 1E-6 * (self.C_G / self.C)
+            chargeNoise = np.random.normal(loc=0, scale=alpha, size=self.V_SD_grid.shape)
+            noisy_V_G_grid = self.V_G_grid + chargeNoise
 
-            Estate_height = uniform(0.1, 0.5) * self.E_C
-            Lstate_height = uniform(0.5, 0.8) * self.E_C
+
+            Estate_height = uniform(0.1, 0.3) * self.E_C
+            Lstate_height = uniform(0.3, 0.5) * self.E_C
 
             # potential energy of ground to ground transition GS(N-1) -> GS(N)
             E_N, mu_N = self.electricPotential(n)
             # Indices where current can flow for  GS(N-1) -> GS(N) transitions
-            current_ground = self.calculate_current(QuantumDot.V_SD_grid, noisy_V_G_grid, mu_N)
-            allowed_indices = self.currentChecker(mu_N)
+            I_ground += self.calculate_current(self.V_SD_grid, noisy_V_G_grid, mu_N)
+            allowed_indices = np.logical_or(allowed_indices, self.currentChecker(mu_N))
 
             delta_E_N = E_N - E_N_previous
-            delta_V_G = QuantumDot.e / self.C_G + delta_E_N * self.C / (QuantumDot.e * self.C_G)  # Width of current diamond
+            delta_V_G = self.e / self.C_G + delta_E_N * self.C / (self.e * self.C_G)  # Width of current diamond
 
             if n == 1:
-                V_G_start = (QuantumDot.e / self.C_G) * (E_N / self.E_C + 1 / 2)  # start of first diamond / start of current diamond
+                V_G_start = (self.e / self.C_G) * (E_N / self.E_C + 1 / 2)  # start of first diamond / start of current diamond
 
                 # potential energy of  ground to excited transition GS(N-1) -> ES(N)
                 mu_N_transition1 = mu_N + Estate_height
-                mu_N_transition1 = np.multiply(mu_N_transition1, allowed_indices)
-                current_transition1 = self.calculate_current(QuantumDot.V_SD_grid, noisy_V_G_grid, mu_N_transition1)
-                random_current_transition1 = current_transition1 * uniform(0.5, 2)
+                current_transition1 = self.calculate_current(self.V_SD_grid, noisy_V_G_grid, mu_N_transition1)
 
-                self.I_tot += random_current_transition1 * 0.1
+                I_excited += current_transition1
 
             elif n != 1:
                 V_G_start += delta_V_G  # update so start of current diamond
@@ -299,83 +295,88 @@ class QuantumDot:
 
                 # potential energy of ground to excited transition GS(N-1) -> ES(N)
                 mu_N_transition1 = mu_N + Estate_height
-                current_transition1 = self.calculate_current(QuantumDot.V_SD_grid, noisy_V_G_grid, mu_N_transition1)
-                random_current_transition1 = current_transition1 * uniform(0.2, 2)
+                current_transition1 = self.calculate_current(self.V_SD_grid, noisy_V_G_grid, mu_N_transition1)
 
                 # potential energy of excited to ground transition GS(N-1) -> LS(N)
                 mu_N_transition2 = mu_N + Lstate_height
-                current_transition2 =self.calculate_current(QuantumDot.V_SD_grid, noisy_V_G_grid, mu_N_transition2)
-                random_current_transition2 = current_transition2 * uniform(0.2, 2)
+                current_transition2 =self.calculate_current(self.V_SD_grid, noisy_V_G_grid, mu_N_transition2)
 
                 # potential energy of excited to ground transition ES(N-1) -> GS(N)
                 mu_N_transition3 = mu_N - Estate_height_previous
-                current_transition3 = self.calculate_current(QuantumDot.V_SD_grid, noisy_V_G_grid, mu_N_transition3)
-                random_current_transition3 = current_transition3 * uniform(0.2, 2)
+                current_transition3 = self.calculate_current(self.V_SD_grid, noisy_V_G_grid, mu_N_transition3)
 
                 # potential energy of excited to ground transition ES(N-1) -> ES(N)
                 mu_N_transition4 = mu_N - Estate_height_previous + Estate_height
-                current_transition4 = self.calculate_current(QuantumDot.V_SD_grid, noisy_V_G_grid, mu_N_transition4)
-                random_current_transition4 = current_transition4 * uniform(0.2, 2)
+                current_transition4 = self.calculate_current(self.V_SD_grid, noisy_V_G_grid, mu_N_transition4)
+
 
                 # potential energy of excited to ground transition ES(N-1) -> LS(N)
                 mu_N_transition5 = mu_N - Estate_height_previous + Lstate_height
-                current_transition5 = self.calculate_current(QuantumDot.V_SD_grid, noisy_V_G_grid, mu_N_transition5)
-                random_current_transition5 = current_transition5 * uniform(0.2, 2)
+                current_transition5 = self.calculate_current(self.V_SD_grid, noisy_V_G_grid, mu_N_transition5)
+
 
                 # potential energy of excited to ground transition LS(N-1) -> GS(N)
                 mu_N_transition6 = mu_N - Lstate_height_previous
-                current_transition6 = self.calculate_current(QuantumDot.V_SD_grid, noisy_V_G_grid, mu_N_transition6)
-                random_current_transition6 = current_transition6 * uniform(0.2, 2)
+                current_transition6 = self.calculate_current(self.V_SD_grid, noisy_V_G_grid, mu_N_transition6)
+
 
                 # potential energy of excited to ground transition LS(N-1) -> ES(N)
                 mu_N_transition7 = mu_N - Lstate_height_previous + Estate_height
-                current_transition7 = self.calculate_current(QuantumDot.V_SD_grid, noisy_V_G_grid, mu_N_transition7)
-                random_current_transition7 = current_transition7 * uniform(0.2, 2)
+                current_transition7 = self.calculate_current(self.V_SD_grid, noisy_V_G_grid, mu_N_transition7)
+
 
                 # potential energy of excited to ground transition LS(N-1) -> LS(N)
                 mu_N_transition8 = mu_N - Lstate_height_previous + Lstate_height
-                current_transition8 = self.calculate_current(QuantumDot.V_SD_grid, noisy_V_G_grid, mu_N_transition8)
-                random_current_transition8 = current_transition8 * uniform(0.2, 2)
+                current_transition8 = self.calculate_current(self.V_SD_grid, noisy_V_G_grid, mu_N_transition8)
 
-                self.I_tot += np.multiply(allowed_indices, random_current_transition1 + random_current_transition2 + random_current_transition3 + \
-                          random_current_transition4 + random_current_transition5 + random_current_transition6 + \
-                          random_current_transition7 + random_current_transition8) * 0.1
+
+                I_excited += current_transition1 + current_transition2 + current_transition3 +\
+                                        current_transition4 + current_transition5 + current_transition6 + \
+                                        current_transition7 + current_transition8
+
+
 
             self.diamond_starts[0, n - 1] = V_G_start
 
-            self.I_tot += current_ground
             # update 'previous' variables to previous values
             E_N_previous = E_N
             Estate_height_previous = Estate_height
             Lstate_height_previous = Lstate_height
 
+        self.I_tot += I_ground + np.multiply(I_excited, allowed_indices)
+
+
         'Thermal noise implementation'
-        thermalNoise = np.random.normal(loc=0, scale=1, size=QuantumDot.V_SD_grid.shape)
-        g_0 = self.I_tot / noisy_V_G_grid
-        I_thermalNoise = np.sqrt(4 * QuantumDot.k_B * QuantumDot.T * np.abs(g_0)) * thermalNoise
+        thermalNoise = np.random.normal(loc=0, scale=1, size=self.V_SD_grid.shape)
+        g_0 = self.I_tot / self.V_SD_grid
+        I_thermalNoise = np.sqrt(4 * self.k_B * self.e * self.T * np.abs(g_0)) * thermalNoise
         self.I_tot += I_thermalNoise
 
         'SHOT noise implementation'
-        shotNoise = np.random.normal(loc=0, scale=1, size=QuantumDot.V_SD_grid.shape)
+        shotNoise = np.random.normal(loc=0, scale=1, size=self.V_SD_grid.shape)
         delta_f = 1000  # bandwidth
-        I_shotNoise = np.sqrt(2 * QuantumDot.e * np.abs(self.I_tot) * delta_f) * shotNoise
+        I_shotNoise = np.sqrt(2 * self.e * np.abs(self.I_tot) * delta_f) * shotNoise
         self.I_tot += I_shotNoise
+
+        # Ensure no current flows inside diamonds from excited states since it's forbidden
+        #self.I_tot = np.multiply(allowed_indices, self.I_tot)
 
         I_tot_abs = np.abs(self.I_tot)
         I_max_abs = np.max(I_tot_abs)
         I_min_abs = np.min(I_tot_abs)
 
         # Plot diamonds
-        plt.contourf(QuantumDot.V_G_grid, QuantumDot.V_SD_grid, I_tot_abs, cmap="seismic",
+        plt.contourf(self.V_G_grid, self.V_SD_grid, I_tot_abs, cmap="seismic",
                                levels=np.linspace(I_min_abs, I_max_abs, 500))  # draw contours of diamonds
 
-        plt.ylim([-QuantumDot.V_SD_max, QuantumDot.V_SD_max])
-        plt.xlim([QuantumDot.V_G_min, QuantumDot.V_G_max])
 
+        plt.ylim([-self.V_SD_max, self.V_SD_max])
+        plt.xlim([self.V_G_min, self.V_G_max])
         plt.axis("off")
         plt.gca().xaxis.set_major_locator(plt.NullLocator())
         plt.gca().yaxis.set_major_locator(plt.NullLocator())
-
+        plt.ylim([-self.V_SD_max, self.V_SD_max])
+        plt.xlim([self.V_G_min, self.V_G_max])
         plt.savefig("../Training Data/Training_Input/input_{0}.png".format(simulation_number), bbox_inches='tight', pad_inches=0.0)
         plt.close()
 
@@ -414,39 +415,12 @@ class QuantumDot:
             plt.plot(x_values, y_values, '-k')
 
         plt.axis("off")
-        plt.gca().xaxis.set_major_locator(
-            plt.NullLocator())
+        plt.gca().xaxis.set_major_locator(plt.NullLocator())
         plt.gca().yaxis.set_major_locator(plt.NullLocator())
-        plt.ylim([-QuantumDot.V_SD_max, QuantumDot.V_SD_max])
-        plt.xlim([QuantumDot.V_G_min, QuantumDot.V_G_max])
+        plt.ylim([-self.V_SD_max, self.V_SD_max])
+        plt.xlim([self.V_G_min, self.V_G_max])
 
-        plt.savefig("../Training Data/Training_Output/output_{0}.png".format(simulation_number), bbox_inches='tight',
-                    pad_inches=0.0)
+        plt.savefig("../Training Data/Training_Output/output_{0}.png".format(simulation_number), bbox_inches='tight',pad_inches=0.0)
         plt.close()
 
         return True
-
-
-dot_1 = QuantumDot()
-dot_1.simulate(69)
-current = dot_1.I_tot
-
-z_grady, z_gradx = np.gradient(current)
-
-plt.figure()
-# Plot diamonds
-plt.contourf(dot_1.V_G_grid, dot_1.V_SD_grid, np.abs(z_grady), cmap="seismic",
-             levels=np.linspace(np.min(z_grady), np.max(z_grady), 1000))  # draw contours of diamonds
-
-plt.ylim([-dot_1.V_SD_max, dot_1.V_SD_max])
-plt.xlim([dot_1.V_G_min, dot_1.V_G_max])
-plt.show()
-
-plt.figure()
-# Plot diamonds
-plt.contourf(dot_1.V_G_grid, dot_1.V_SD_grid, np.abs(z_gradx), cmap="seismic",
-             levels=np.linspace(np.min(z_gradx), np.max(z_gradx), 1000))  # draw contours of diamonds
-
-plt.ylim([-dot_1.V_SD_max, dot_1.V_SD_max])
-plt.xlim([dot_1.V_G_min, dot_1.V_G_max])
-plt.show()

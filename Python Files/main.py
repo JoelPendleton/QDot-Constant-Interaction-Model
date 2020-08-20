@@ -7,12 +7,13 @@
 # -----------------------------------------------------------
 from multiprocessing import Pool
 from multiprocessing import freeze_support
-import helper
+from helper import Helper
 import sys
 
 
 
 if __name__ == "__main__":
+    helper = Helper()
     try:
 
         generate_or_augment = sys.argv[1]
@@ -40,11 +41,12 @@ if __name__ == "__main__":
                           "the number of training examples"
                           "\nyou wish to generate. For --augment no other arguments are required.")
                 print("Generating training data...")
-                helper.generate(number_of_examples)
+                helper.generate_examples(number_of_examples)
 
                 if generate_or_augment == "--both":
                     print("Augmenting training data...")
-                    helper.augment()
+                    helper.augment_examples()
+
 
 
             except TypeError:
@@ -57,7 +59,8 @@ if __name__ == "__main__":
 
         elif generate_or_augment == "--augment":
             print("Augmenting training data...")
-            helper.augment()
+            helper.augment_examples()
+
         else:
             print("Make sure when you call this file you pass one of the following flags as your first argument.\n"
                   "--simulate generates training examples\n"
