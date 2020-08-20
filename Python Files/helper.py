@@ -56,8 +56,6 @@ class Helper:
         iaa.LinearContrast((0.8, 2), per_channel=0.5)
 
     ], random_order=True)  # apply augmenters in random order
-    number_of_examples_created = len(os.listdir('../Training Data/Training_Input'))
-    num_processes = int(multiprocessing.cpu_count() * 0.8)  # number of logical processors to utilise
 
     def __init__(self):
         """
@@ -72,6 +70,8 @@ class Helper:
         if not os.path.exists("../Training Data/Training_Output"):
             os.makedirs("../Training Data/Training_Output")
 
+        self.number_of_examples_created = len(os.listdir('../Training Data/Training_Input'))
+        self.num_processes = int(multiprocessing.cpu_count() * 0.8)  # number of logical processors to utilise
 
 
     '''Define function to run mutiple processors and pool the results together'''
@@ -139,6 +139,7 @@ class Helper:
 
         #  imap: It only support functions with one dynamic argument
         func = self.augment
+        self.number_of_examples_created = len(os.listdir('../Training Data/Training_Input'))
         argument_list = list(range(1, self.number_of_examples_created + 1))
 
         result_list = self.run_imap_multiprocessing(func=func, argument_list=argument_list, num_processes=self.num_processes)
