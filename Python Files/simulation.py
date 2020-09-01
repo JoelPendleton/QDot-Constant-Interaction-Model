@@ -358,10 +358,15 @@ class QuantumDot:
         I_shotNoise = np.sqrt(2 * self.e * np.abs(self.I_tot) * delta_f) * shotNoise
         self.I_tot += I_shotNoise
 
-        # Ensure no current flows inside diamonds from excited states since it's forbidden
-        #self.I_tot = np.multiply(allowed_indices, self.I_tot)
 
+        # Ensure no current flows inside diamonds from excited states since it's forbidden
+        self.I_tot = np.multiply(allowed_indices, self.I_tot)
         I_tot_abs = np.abs(self.I_tot)
+
+        offset = np.min(I_tot_abs)
+        self.I_tot += np.multiply(np.logical_not(allowed_indices), offset)
+
+
         I_max_abs = np.max(I_tot_abs)
         I_min_abs = np.min(I_tot_abs)
 
@@ -385,34 +390,36 @@ class QuantumDot:
         negative_slope = - self.C_G / self.C_S
 
         plt.figure(figsize=(10, 10), dpi=150)
-
-        for i in range(
-                len(self.N) - 1):  # need -1 as block would attempt to access index N otherwise and it doesn't exist
-            # positive grad. top-left
-            x_final = (positive_slope * self.diamond_starts[0, i] - negative_slope * self.diamond_starts[0, i + 1]) / (
-                    positive_slope - negative_slope)  # analytical formula derived by equating equations of lines
-            x_values = [self.diamond_starts[0, i], x_final]
-            y_final = positive_slope * (x_final - self.diamond_starts[0, i])
-            y_values = [0, y_final]
-            plt.plot(x_values, y_values, '-k')
-
-            # negative grad. top-right
-            x_values = [x_final, self.diamond_starts[0, i + 1]]
-            y_values = [y_final, 0]
-            plt.plot(x_values, y_values, '-k')
-
-            # positive grad. bottom-right
-            x_final = (positive_slope * self.diamond_starts[0, i + 1] - negative_slope * self.diamond_starts[0, i]) / (
-                    positive_slope - negative_slope)
-            x_values = [self.diamond_starts[0, i + 1], x_final]
-            y_final = positive_slope * (x_final - self.diamond_starts[0, i + 1])
-            y_values = [0, y_final]
-            plt.plot(x_values, y_values, '-k')
-
-            # negative grad. bottom-left
-            x_values = [x_final, self.diamond_starts[0, i]]
-            y_values = [y_final, 0]
-            plt.plot(x_values, y_values, '-k')
+        # Plot segmented diamonds
+        plt.contourf(self.V_G_grid, self.V_SD_grid, allowed_indices, cmap="gray",
+                     levels=np.linspace(0, 1, 100))  # draw contours of diamonds
+        # for i in range(
+        #         len(self.N) - 1):  # need -1 as block would attempt to access index N otherwise and it doesn't exist
+        #     # positive grad. top-left
+        #     x_final = (positive_slope * self.diamond_starts[0, i] - negative_slope * self.diamond_starts[0, i + 1]) / (
+        #             positive_slope - negative_slope)  # analytical formula derived by equating equations of lines
+        #     x_values = [self.diamond_starts[0, i], x_final]
+        #     y_final = positive_slope * (x_final - self.diamond_starts[0, i])
+        #     y_values = [0, y_final]
+        #     plt.plot(x_values, y_values, '-k')
+        #
+        #     # negative grad. top-right
+        #     x_values = [x_final, self.diamond_starts[0, i + 1]]
+        #     y_values = [y_final, 0]
+        #     plt.plot(x_values, y_values, '-k')
+        #
+        #     # positive grad. bottom-right
+        #     x_final = (positive_slope * self.diamond_starts[0, i + 1] - negative_slope * self.diamond_starts[0, i]) / (
+        #             positive_slope - negative_slope)
+        #     x_values = [self.diamond_starts[0, i + 1], x_final]
+        #     y_final = positive_slope * (x_final - self.diamond_starts[0, i + 1])
+        #     y_values = [0, y_final]
+        #     plt.plot(x_values, y_values, '-k')
+        #
+        #     # negative grad. bottom-left
+        #     x_values = [x_final, self.diamond_starts[0, i]]
+        #     y_values = [y_final, 0]
+        #     plt.plot(x_values, y_values, '-k')
 
         plt.axis("off")
         plt.gca().xaxis.set_major_locator(plt.NullLocator())
