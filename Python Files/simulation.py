@@ -370,10 +370,15 @@ class QuantumDot:
         I_max_abs = np.max(I_tot_abs)
         I_min_abs = np.min(I_tot_abs)
 
-        # Plot diamonds
-        plt.contourf(self.V_G_grid, self.V_SD_grid, I_tot_abs, cmap="seismic",
-                               levels=np.linspace(I_min_abs, I_max_abs, 500))  # draw contours of diamonds
+        I_grad_V_SD, I_grad_V_G =np.gradient(I_tot_abs)
 
+        # # Plot diamonds (current)
+        # plt.contourf(self.V_G_grid, self.V_SD_grid, I_tot_abs, cmap="seismic",
+        #                        levels=np.linspace(I_min_abs, I_max_abs, 500))  # draw contours of diamonds
+
+        # Plot diamonds (gradient)
+        plt.contourf(self.V_G_grid, self.V_SD_grid, I_grad_V_SD, cmap="seismic",
+                     levels=np.linspace(np.min(I_grad_V_SD), np.max(I_grad_V_SD), 500))  # draw contours of diamonds
 
         plt.ylim([-self.V_SD_max, self.V_SD_max])
         plt.xlim([self.V_G_min, self.V_G_max])
@@ -420,6 +425,8 @@ class QuantumDot:
         #     x_values = [x_final, self.diamond_starts[0, i]]
         #     y_values = [y_final, 0]
         #     plt.plot(x_values, y_values, '-k')
+
+
 
         plt.axis("off")
         plt.gca().xaxis.set_major_locator(plt.NullLocator())
