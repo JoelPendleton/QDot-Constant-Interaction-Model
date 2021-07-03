@@ -8,11 +8,16 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.patches as patches
 from random import seed # generates seed for random number generator
 from random import random  # random generates a random number between 0 and 1
 from random import uniform # generates random float between specified range
 from random import randint
 from datetime import datetime
+
+from pascal_voc_writer import Writer
+
+
 
 class QuantumDot:
 
@@ -33,7 +38,7 @@ class QuantumDot:
         V_SD_grid (float): 2D numpy array of 1000 x 1000 source-drain voltage values. Units: V
         V_G_grid (float): 2D numpy array of 1000 x 1000 gate voltage values. Units: V
     """
-
+    seed(datetime.now())
     simCount = 0 # number of simulations
     e = 1.6E-19
     h = 4.1357E-15
@@ -42,8 +47,11 @@ class QuantumDot:
     V_SD_max = 0.2
     V_G_min = 0.005
     V_G_max = 1.2
-    V_SD = np.linspace(- V_SD_max, V_SD_max, 1000)
-    V_G = np.linspace(V_G_min, V_G_max, 1000)
+    image_hw = 1024 # definition of image height and width (1000 pixels)
+    V_SD = np.linspace(- V_SD_max, V_SD_max, image_hw) # random factor added so the diamonds
+    # aren't always in the vertical centre.
+
+    V_G = np.linspace(V_G_min, V_G_max, image_hw)
 
     # Generate 2D array to represent possible voltage combinations
     V_SD_grid, V_G_grid = np.meshgrid(V_SD, V_G)
@@ -68,7 +76,7 @@ class QuantumDot:
        """
         QuantumDot.simCount += 1
         seed(datetime.now())  # use current time as random number seed
-        self.N = range(1, randint(3, 20))
+        self.N = range(1, randint(5, 20))
         self.N_0 = 0
         self.I_tot = np.zeros(self.V_SD_grid.shape)
         self.diamond_starts = np.zeros((1, len(self.N)))
@@ -251,7 +259,8 @@ class QuantumDot:
             True upon completion
         """
 
-        plt.figure(figsize=(10, 10), dpi=150)
+        fig = plt.figure(figsize=(8,8))
+        ax = fig.add_axes([0, 0, 1, 1])
 
         E_N_previous = 0
         Estate_height_previous = 0  # stores previous various excited energy height above ground level
@@ -259,13 +268,14 @@ class QuantumDot:
         allowed_indices = np.zeros(self.V_SD_grid.shape)
         I_ground = np.zeros(self.V_SD_grid.shape)
         I_excited = np.zeros(self.V_SD_grid.shape)
+        plt.subplots_adjust(left=None, bottom=None, right=None, top=None, wspace=None, hspace=None)
 
         for n in self.N:
 
-            'Charge noise implementation'
-            alpha = 1E-6 * (self.C_G / self.C)
-            chargeNoise = np.random.normal(loc=0, scale=alpha, size=self.V_SD_grid.shape)
-            noisy_V_G_grid = self.V_G_grid + chargeNoise
+            # 'Charge noise implementation'
+            # alpha = 1E-6 * (self.C_G / self.C)
+            # chargeNoise = np.random.normal(loc=0, scale=alpha, size=self.V_SD_grid.shape)
+            noisy_V_G_grid = self.V_G_grid #+ chargeNoise
 
 
             Estate_height = uniform(0.1, 0.3) * self.E_C
@@ -338,25 +348,31 @@ class QuantumDot:
 
             self.diamond_starts[0, n - 1] = V_G_start
 
+
+
             # update 'previous' variables to previous values
             E_N_previous = E_N
             Estate_height_previous = Estate_height
             Lstate_height_previous = Lstate_height
 
+        if self.diamond_starts[0, self.N[1]] > self.image_hw: # if the second diamond is outside of the image then
+            # no annotations will be found and the YOLO algorithm will fail
+            return False # return false if second diamond is not inside image frame
+
         self.I_tot += I_ground + np.multiply(I_excited, allowed_indices)
 
 
-        'Thermal noise implementation'
-        thermalNoise = np.random.normal(loc=0, scale=1, size=self.V_SD_grid.shape)
-        g_0 = self.I_tot / self.V_SD_grid
-        I_thermalNoise = np.sqrt(4 * self.k_B * self.e * self.T * np.abs(g_0)) * thermalNoise
-        self.I_tot += I_thermalNoise
-
-        'SHOT noise implementation'
-        shotNoise = np.random.normal(loc=0, scale=1, size=self.V_SD_grid.shape)
-        delta_f = 1000  # bandwidth
-        I_shotNoise = np.sqrt(2 * self.e * np.abs(self.I_tot) * delta_f) * shotNoise
-        self.I_tot += I_shotNoise
+        # 'Thermal noise implementation'
+        # thermalNoise = np.random.normal(loc=0, scale=1, size=self.V_SD_grid.shape)
+        # g_0 = self.I_tot / self.V_SD_grid
+        # I_thermalNoise = np.sqrt(4 * self.k_B * self.e * self.T * np.abs(g_0)) * thermalNoise
+        # self.I_tot += I_thermalNoise
+        #
+        # 'SHOT noise implementation'
+        # shotNoise = np.random.normal(loc=0, scale=1, size=self.V_SD_grid.shape)
+        # delta_f = 1000  # bandwidth
+        # I_shotNoise = np.sqrt(2 * self.e * np.abs(self.I_tot) * delta_f) * shotNoise
+        # self.I_tot += I_shotNoise
 
 
         # Ensure no current flows inside diamonds from excited states since it's forbidden
@@ -370,71 +386,66 @@ class QuantumDot:
         I_max_abs = np.max(I_tot_abs)
         I_min_abs = np.min(I_tot_abs)
 
-        I_grad_V_SD, I_grad_V_G =np.gradient(I_tot_abs)
+        I_grad_V_SD, I_grad_V_G = np.gradient(I_tot_abs)
+
+
 
         # # Plot diamonds (current)
-        # plt.contourf(self.V_G_grid, self.V_SD_grid, I_tot_abs, cmap="seismic",
-        #                        levels=np.linspace(I_min_abs, I_max_abs, 500))  # draw contours of diamonds
+        ax.contourf(self.V_G_grid, self.V_SD_grid, I_tot_abs, cmap="seismic",
+                               levels=np.linspace(I_min_abs, I_max_abs, 500))  # draw contours of diamonds
 
-        # Plot diamonds (gradient)
-        plt.contourf(self.V_G_grid, self.V_SD_grid, I_grad_V_SD, cmap="seismic",
-                     levels=np.linspace(np.min(I_grad_V_SD), np.max(I_grad_V_SD), 500))  # draw contours of diamonds
+        ax.axis('off')
+
+        # # Plot diamonds (gradient)
+        # plt.contourf(self.V_G_grid, self.V_SD_grid, I_grad_V_SD, cmap="seismic",
+        #              levels=np.linspace(np.min(I_grad_V_SD), np.max(I_grad_V_SD), 500))  # draw contours of diamonds
+
 
         plt.ylim([-self.V_SD_max, self.V_SD_max])
         plt.xlim([self.V_G_min, self.V_G_max])
-        plt.axis("off")
-        plt.gca().xaxis.set_major_locator(plt.NullLocator())
-        plt.gca().yaxis.set_major_locator(plt.NullLocator())
-        plt.ylim([-self.V_SD_max, self.V_SD_max])
-        plt.xlim([self.V_G_min, self.V_G_max])
-        plt.savefig("../Training Data/Training_Input/input_{0}.png".format(simulation_number), bbox_inches='tight', pad_inches=0.0)
-        plt.close()
+
+        fig.savefig("../data/train/image/image_{0}.png".format(simulation_number), dpi=(128)) # Save training image
+
+        # Generate Training Annotation
 
         # Compute negative and positive slopes of diamonds for drawing edges
         positive_slope = self.C_G / (self.C_G + self.C_D)
         negative_slope = - self.C_G / self.C_S
 
-        plt.figure(figsize=(10, 10), dpi=150)
-        # Plot segmented diamonds
-        plt.contourf(self.V_G_grid, self.V_SD_grid, allowed_indices, cmap="gray",
-                     levels=np.linspace(0, 1, 100))  # draw contours of diamonds
-        # for i in range(
-        #         len(self.N) - 1):  # need -1 as block would attempt to access index N otherwise and it doesn't exist
-        #     # positive grad. top-left
-        #     x_final = (positive_slope * self.diamond_starts[0, i] - negative_slope * self.diamond_starts[0, i + 1]) / (
-        #             positive_slope - negative_slope)  # analytical formula derived by equating equations of lines
-        #     x_values = [self.diamond_starts[0, i], x_final]
-        #     y_final = positive_slope * (x_final - self.diamond_starts[0, i])
-        #     y_values = [0, y_final]
-        #     plt.plot(x_values, y_values, '-k')
-        #
-        #     # negative grad. top-right
-        #     x_values = [x_final, self.diamond_starts[0, i + 1]]
-        #     y_values = [y_final, 0]
-        #     plt.plot(x_values, y_values, '-k')
-        #
-        #     # positive grad. bottom-right
-        #     x_final = (positive_slope * self.diamond_starts[0, i + 1] - negative_slope * self.diamond_starts[0, i]) / (
-        #             positive_slope - negative_slope)
-        #     x_values = [self.diamond_starts[0, i + 1], x_final]
-        #     y_final = positive_slope * (x_final - self.diamond_starts[0, i + 1])
-        #     y_values = [0, y_final]
-        #     plt.plot(x_values, y_values, '-k')
-        #
-        #     # negative grad. bottom-left
-        #     x_values = [x_final, self.diamond_starts[0, i]]
-        #     y_values = [y_final, 0]
-        #     plt.plot(x_values, y_values, '-k')
 
+        writer = Writer("../data/train/image/image_{0}.png".format(simulation_number), self.image_hw, self.image_hw)
 
+        for i in range(
+                len(self.N) - 1):  # need -1 as block would attempt to access index N otherwise and it doesn't exist
 
-        plt.axis("off")
-        plt.gca().xaxis.set_major_locator(plt.NullLocator())
-        plt.gca().yaxis.set_major_locator(plt.NullLocator())
-        plt.ylim([-self.V_SD_max, self.V_SD_max])
-        plt.xlim([self.V_G_min, self.V_G_max])
+            # positive grad. top-left
+            x_final = (positive_slope * self.diamond_starts[0, i] - negative_slope * self.diamond_starts[0, i + 1]) / (
+                    positive_slope - negative_slope)  # analytical formula derived by equating equations of lines
+            y_final = positive_slope * (x_final - self.diamond_starts[0, i])
 
-        plt.savefig("../Training Data/Training_Output/output_{0}.png".format(simulation_number), bbox_inches='tight',pad_inches=0.0)
-        plt.close()
+            # Find relevant parameters for YOLO
+
+            # parameters in standard units
+            height_half = y_final # half of height of diamond
+            width = self.diamond_starts[0, i + 1] - self.diamond_starts[0, i]
+            x_centre = self.diamond_starts[0, i] + width/2
+            y_centre = 0
+
+            # Convert parameters to their corresponding pixel values
+            scale_x = self.image_hw / (self.V_G_max - self.V_G_min)
+            scale_y = self.image_hw / (2 * self.V_SD_max)
+            height_half = int(height_half * scale_y)
+            width = int(width * scale_x)
+            diamond_centre = [int(x_centre * scale_x), int((y_centre + self.V_SD_max)*scale_y)]
+            xmin = int((diamond_centre[0] -width/2))
+            xmax = int((diamond_centre[0] + width/2))
+            ymin = int((diamond_centre[1] - height_half))
+            ymax = int((diamond_centre[1] + height_half))
+
+            if (xmax < self.image_hw) and (ymax < self.image_hw):
+                writer.addObject('diamond', xmin, ymin, xmax, ymax)
+
+        writer.save("../data/train/annotation/image_{0}.xml".format(simulation_number))
 
         return True
+

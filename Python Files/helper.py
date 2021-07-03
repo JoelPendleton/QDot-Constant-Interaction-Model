@@ -61,16 +61,20 @@ class Helper:
         """
        The constructor for Helper class.
        """
-        if not os.path.exists("../Training Data/Training_Input_Augmented"):
-            os.makedirs("../Training Data/Training_Input_Augmented")
-        if not os.path.exists("../Training Data/Training_Output_Augmented"):
-            os.makedirs("../Training Data/Training_Output_Augmented")
-        if not os.path.exists("../Training Data/Training_Input"):
-            os.makedirs("../Training Data/Training_Input")
-        if not os.path.exists("../Training Data/Training_Output"):
-            os.makedirs("../Training Data/Training_Output")
+        if not os.path.exists("../data/train/image"):
+            os.makedirs("../data/train/image")
+        if not os.path.exists("../data/train/annotation"):
+            os.makedirs("../data/train/annotation")
+        if not os.path.exists("../data/train_augmented/image"):
+            os.makedirs("../data/train_augmented/image")
+        if not os.path.exists("../data/train_augmented/annotation"):
+            os.makedirs("../data/train_augmented/annotation")
+        if not os.path.exists("../data/val/image"):
+            os.makedirs("../data/val/image")
+        if not os.path.exists("../data/val/annotation"):
+            os.makedirs("../data/val/annotation")
 
-        self.number_of_examples_created = len(os.listdir('../Training Data/Training_Input'))
+        self.number_of_examples_created = len(os.listdir('../data/train/image'))
         self.num_processes = int(multiprocessing.cpu_count() * 0.8)  # number of logical processors to utilise
 
 
@@ -86,7 +90,10 @@ class Helper:
             i (int): current iteration of the simulations.
         """
         dot_i = QuantumDot()
-        dot_i.simulate(i)
+        simulate = dot_i.simulate(i)
+
+        while simulate == False: # if there are no annotations produced try simulate again
+            simulate = dot_i.simulate(i)
         return i
 
     def run_imap_multiprocessing(self, func, argument_list, num_processes):
@@ -139,7 +146,7 @@ class Helper:
 
         #  imap: It only support functions with one dynamic argument
         func = self.augment
-        self.number_of_examples_created = len(os.listdir('../Training Data/Training_Input'))
+        self.number_of_examples_created = len(os.listdir('../data/train/image'))
         argument_list = list(range(1, self.number_of_examples_created + 1))
 
         result_list = self.run_imap_multiprocessing(func=func, argument_list=argument_list, num_processes=self.num_processes)
@@ -157,22 +164,20 @@ class Helper:
             i (int): the number of the current iteration
          """
 
-        img = Image.open('../Training Data/Training_Input/input_{0}.png'.format(i)).convert(
-            'RGB')  # open image to augment
-        img_array = np.array(img)  # convert to array
-        img.close()  # close img to free up memory
-        ia.seed(int(datetime.utcnow().timestamp()))  # generate random seed
-        images = [img_array, img_array, img_array, img_array]  # generate 4 augmented images
-        images_aug = Helper.seq(images=images)  # perform augmentation sequence on each of the images
-        counter = 4
-        for k in range(1, len(images_aug) + 1):  # for each of the augmented images
-            current_image_number = self.number_of_examples_created + k + counter * (i - 1)  # current augmented image number to be saved
-            img_aug = Image.fromarray(np.uint8(images_aug[k - 1]))  # convert to image
-            img_aug.save('../Training Data/Training_Input_Augmented/input_{0}.png'.format(
-                current_image_number))  # save augmented inout image
-            img_aug.close()
-            shutil.copy("../Training Data/Training_Output/output_{0}.png".format(i),
-                        "../Training Data/Training_Output_Augmented/output_{0}.png".format(current_image_number))
-            # copy training output for each of the augmented images
+        # img = Image.open('../data/train/image/image_{0}.png'.format(i)).convert(
+        #     'RGB')  # open image to augment
+        # img_array = np.array(img)  # convert to array
+        # img.close()  # close img to free up memory
+        # ia.seed(int(datetime.utcnow().timestamp()))  # generate random seed
+        # images = [img_array, img_array, img_array, img_array]  # generate 4 augmented images
+        # images_aug = Helper.seq(images=images)  # perform augmentation sequence on each of the images
+        # counter = 4
+        # for k in range(1, len(images_aug) + 1):  # for each of the augmented images
+        #     current_image_number = self.number_of_examples_created + k + counter * (i - 1)  # current augmented image number to be saved
+        #     img_aug = Image.fromarray(np.uint8(images_aug[k - 1]))  # convert to image
+        #     img_aug.save('../data/train_augmented/image/input_{0}.png'.format(
+        #         current_image_number))  # save augmented inout image
+        #     img_aug.close()
+
 
         return i
