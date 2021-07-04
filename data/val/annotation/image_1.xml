@@ -1,0 +1,70 @@
+<annotation>
+    <folder>image</folder>
+    <filename>image_1.png</filename>
+    <path>C:\Users\joelk\Documents\QMT Internship Code\QDot-Constant-Interaction-Model\data\val\image\image_1.png</path>
+    <source>
+        <database>Unknown</database>
+    </source>
+    <size>
+        <width>1024</width>
+        <height>1024</height>
+        <depth>3</depth>
+    </size>
+    <segmented>0</segmented>
+    <object>
+        <name>diamond</name>
+        <pose>Unspecified</pose>
+        <truncated>0</truncated>
+        <difficult>0</difficult>
+        <bndbox>
+            <xmin>222</xmin>
+            <ymin>201</ymin>
+            <xmax>360</xmax>
+            <ymax>823</ymax>
+        </bndbox>
+    </object>    <object>
+        <name>diamond</name>
+        <pose>Unspecified</pose>
+        <truncated>0</truncated>
+        <difficult>0</difficult>
+        <bndbox>
+            <xmin>360</xmin>
+            <ymin>319</ymin>
+            <xmax>445</xmax>
+            <ymax>705</ymax>
+        </bndbox>
+    </object>    <object>
+        <name>diamond</name>
+        <pose>Unspecified</pose>
+        <truncated>0</truncated>
+        <difficult>0</difficult>
+        <bndbox>
+            <xmin>446</xmin>
+            <ymin>383</ymin>
+            <xmax>503</xmax>
+            <ymax>641</ymax>
+        </bndbox>
+    </object>    <object>
+        <name>diamond</name>
+        <pose>Unspecified</pose>
+        <truncated>0</truncated>
+        <difficult>0</difficult>
+        <bndbox>
+            <xmin>504</xmin>
+            <ymin>395</ymin>
+            <xmax>556</xmax>
+            <ymax>629</ymax>
+        </bndbox>
+    </object>    <object>
+        <name>diamond</name>
+        <pose>Unspecified</pose>
+        <truncated>0</truncated>
+        <difficult>0</difficult>
+        <bndbox>
+            <xmin>555</xmin>
+            <ymin>415</ymin>
+            <xmax>598</xmax>
+            <ymax>609</ymax>
+        </bndbox>
+    </object>
+</annotation>

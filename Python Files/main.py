@@ -5,8 +5,7 @@
 # Released under MIT license
 # email joel.pendleton@quantummotion.tech
 # -----------------------------------------------------------
-from multiprocessing import Pool
-from multiprocessing import freeze_support
+
 from helper import Helper
 import sys
 
@@ -43,10 +42,6 @@ if __name__ == "__main__":
                 print("Generating training data...")
                 helper.generate_examples(number_of_examples)
 
-                if generate_or_augment == "--both":
-                    print("Augmenting training data...")
-                    helper.augment_examples()
-
 
 
             except TypeError:
@@ -57,9 +52,7 @@ if __name__ == "__main__":
                       "E.g. python main.py --simulate 1000\n"
                       "This generates 1000 training examples.")
 
-        elif generate_or_augment == "--augment":
-            print("Augmenting training data...")
-            helper.augment_examples()
+
 
         else:
             print("Make sure when you call this file you pass one of the following flags as your first argument.\n"
