@@ -437,7 +437,7 @@ class QuantumDot:
             return False
         else:
             fig.savefig(path + "image/image_{0}.png".format(simulation_number), dpi=(128)) # Save training image
-            plt.close()
+            plt.close(fig)
             writer.save(path + "annotation/image_{0}.xml".format(simulation_number))
             return True
 
