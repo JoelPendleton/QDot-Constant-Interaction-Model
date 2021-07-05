@@ -36,8 +36,8 @@ The program outputs XML files using the PASCAL VOC format with attributes xmin, 
        <td>Output</td>
      </tr> 
      <tr>
-       <td><img src="simulation_example_input.png" width="500"></td>
-       <td><img src="simulation_example_output.png" width="500"></td>
+       <td><img src="./example/simulation_example_input.png" width="500"></td>
+       <td><img src="./example/simulation_example_output.png" width="500"></td>
      </tr > 
   </tbody>
 </table>
