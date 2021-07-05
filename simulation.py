@@ -73,7 +73,7 @@ class QuantumDot:
        """
         QuantumDot.simCount += 1
         seed(datetime.now())  # use current time as random number seed
-        self.N = range(1, randint(2, 20))
+        self.N = range(1, randint(2, 10))
         self.N_0 = 0
         self.I_tot = np.zeros(self.V_SD_grid.shape)
         self.diamond_starts = np.zeros((1, len(self.N)))
@@ -432,7 +432,7 @@ class QuantumDot:
             else:
                 continue
 
-        if diamonds_visible < 1:
+        if diamonds_visible < len(self.N): #  Used to be 1 but there were a lot of diamonds that where pretty much all there but not detected.
             # print("Retrying simulation of Quantum Dot", simulation_number)
             return False
         else:

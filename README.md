@@ -19,8 +19,9 @@ To generate training examples run the **main.py** script in the command line usi
 for the **--simulate** and **--both** arguments you need to also pass another argument, the number of training examples you wish to generate.
 
 E.g. 
-```python main.py --simulate 100```
-This generates 100 training examples.
+```python main.py --simulate 100 20 --noise```
+This generates a training set of size 100 and a validation with size 20,
+with noise.
 
 **Example of training example generated:**
 
