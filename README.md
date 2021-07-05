@@ -16,7 +16,7 @@ The software has the following usage:
 - The **-simulate** flag tells the program that you want to generate some simulations. 
     - In this case you need to pass, **<training-size>** and **<validation-size>**. These tell the program the size of
     the training set an validation set you want to produce.
-    - The **-noise** flag tells the program to add noise (SHOT, Thermal and Charge) to your simulations. For no noise
+    - The **--noise** flag tells the program to add noise (SHOT, Thermal and Charge) to your simulations. For no noise
     simply exclude this flag.
 - You should pass the **-help** flag if you require instructions on how to use the flags.
 
