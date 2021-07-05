@@ -76,7 +76,7 @@ class QuantumDot:
        """
         QuantumDot.simCount += 1
         seed(datetime.now())  # use current time as random number seed
-        self.N = range(1, randint(5, 20))
+        self.N = range(1, randint(2, 20))
         self.N_0 = 0
         self.I_tot = np.zeros(self.V_SD_grid.shape)
         self.diamond_starts = np.zeros((1, len(self.N)))
@@ -355,9 +355,7 @@ class QuantumDot:
             Estate_height_previous = Estate_height
             Lstate_height_previous = Lstate_height
 
-        if self.diamond_starts[0, self.N[1]] > self.image_hw: # if the second diamond is outside of the image then
-            # no annotations will be found and the YOLO algorithm will fail
-            return False # return false if second diamond is not inside image frame
+
 
         self.I_tot += I_ground + np.multiply(I_excited, allowed_indices)
 
@@ -404,7 +402,6 @@ class QuantumDot:
         plt.ylim([-self.V_SD_max, self.V_SD_max])
         plt.xlim([self.V_G_min, self.V_G_max])
 
-        fig.savefig("../data/train/image/image_{0}.png".format(simulation_number), dpi=(128)) # Save training image
 
         # Generate Training Annotation
 
@@ -415,6 +412,7 @@ class QuantumDot:
 
         writer = Writer("../data/train/image/image_{0}.png".format(simulation_number), self.image_hw, self.image_hw)
 
+        diamonds_visible = 0
         for i in range(
                 len(self.N) - 1):  # need -1 as block would attempt to access index N otherwise and it doesn't exist
 
@@ -444,8 +442,16 @@ class QuantumDot:
 
             if (xmax < self.image_hw) and (ymax < self.image_hw):
                 writer.addObject('diamond', xmin, ymin, xmax, ymax)
+                diamonds_visible += 1
+            else:
+                continue
 
-        writer.save("../data/train/annotation/image_{0}.xml".format(simulation_number))
-
-        return True
+        if diamonds_visible < 1:
+            #print("Retrying simulation of Quantum Dot", simulation_number)
+            return False
+        else:
+            fig.savefig("../data/train/image/image_{0}.png".format(simulation_number), dpi=(128)) # Save training image
+            plt.close()
+            writer.save("../data/train/annotation/image_{0}.xml".format(simulation_number))
+            return True
 

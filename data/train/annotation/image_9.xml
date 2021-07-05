@@ -1,0 +1,191 @@
+<annotation>
+    <folder>image</folder>
+    <filename>image_9.png</filename>
+    <path>C:\Users\joelk\Documents\QMT Internship Code\QDot-Constant-Interaction-Model\data\train\image\image_9.png</path>
+    <source>
+        <database>Unknown</database>
+    </source>
+    <size>
+        <width>1024</width>
+        <height>1024</height>
+        <depth>3</depth>
+    </size>
+    <segmented>0</segmented>
+    <object>
+        <name>diamond</name>
+        <pose>Unspecified</pose>
+        <truncated>0</truncated>
+        <difficult>0</difficult>
+        <bndbox>
+            <xmin>175</xmin>
+            <ymin>264</ymin>
+            <xmax>288</xmax>
+            <ymax>760</ymax>
+        </bndbox>
+    </object>    <object>
+        <name>diamond</name>
+        <pose>Unspecified</pose>
+        <truncated>0</truncated>
+        <difficult>0</difficult>
+        <bndbox>
+            <xmin>289</xmin>
+            <ymin>385</ymin>
+            <xmax>346</xmax>
+            <ymax>639</ymax>
+        </bndbox>
+    </object>    <object>
+        <name>diamond</name>
+        <pose>Unspecified</pose>
+        <truncated>0</truncated>
+        <difficult>0</difficult>
+        <bndbox>
+            <xmin>347</xmin>
+            <ymin>400</ymin>
+            <xmax>398</xmax>
+            <ymax>624</ymax>
+        </bndbox>
+    </object>    <object>
+        <name>diamond</name>
+        <pose>Unspecified</pose>
+        <truncated>0</truncated>
+        <difficult>0</difficult>
+        <bndbox>
+            <xmin>398</xmin>
+            <ymin>407</ymin>
+            <xmax>446</xmax>
+            <ymax>617</ymax>
+        </bndbox>
+    </object>    <object>
+        <name>diamond</name>
+        <pose>Unspecified</pose>
+        <truncated>0</truncated>
+        <difficult>0</difficult>
+        <bndbox>
+            <xmin>446</xmin>
+            <ymin>469</ymin>
+            <xmax>466</xmax>
+            <ymax>555</ymax>
+        </bndbox>
+    </object>    <object>
+        <name>diamond</name>
+        <pose>Unspecified</pose>
+        <truncated>0</truncated>
+        <difficult>0</difficult>
+        <bndbox>
+            <xmin>466</xmin>
+            <ymin>416</ymin>
+            <xmax>509</xmax>
+            <ymax>608</ymax>
+        </bndbox>
+    </object>    <object>
+        <name>diamond</name>
+        <pose>Unspecified</pose>
+        <truncated>0</truncated>
+        <difficult>0</difficult>
+        <bndbox>
+            <xmin>511</xmin>
+            <ymin>432</ymin>
+            <xmax>547</xmax>
+            <ymax>592</ymax>
+        </bndbox>
+    </object>    <object>
+        <name>diamond</name>
+        <pose>Unspecified</pose>
+        <truncated>0</truncated>
+        <difficult>0</difficult>
+        <bndbox>
+            <xmin>547</xmin>
+            <ymin>426</ymin>
+            <xmax>586</xmax>
+            <ymax>598</ymax>
+        </bndbox>
+    </object>    <object>
+        <name>diamond</name>
+        <pose>Unspecified</pose>
+        <truncated>0</truncated>
+        <difficult>0</difficult>
+        <bndbox>
+            <xmin>586</xmin>
+            <ymin>400</ymin>
+            <xmax>637</xmax>
+            <ymax>624</ymax>
+        </bndbox>
+    </object>    <object>
+        <name>diamond</name>
+        <pose>Unspecified</pose>
+        <truncated>0</truncated>
+        <difficult>0</difficult>
+        <bndbox>
+            <xmin>638</xmin>
+            <ymin>439</ymin>
+            <xmax>671</xmax>
+            <ymax>585</ymax>
+        </bndbox>
+    </object>    <object>
+        <name>diamond</name>
+        <pose>Unspecified</pose>
+        <truncated>0</truncated>
+        <difficult>0</difficult>
+        <bndbox>
+            <xmin>671</xmin>
+            <ymin>470</ymin>
+            <xmax>690</xmax>
+            <ymax>554</ymax>
+        </bndbox>
+    </object>    <object>
+        <name>diamond</name>
+        <pose>Unspecified</pose>
+        <truncated>0</truncated>
+        <difficult>0</difficult>
+        <bndbox>
+            <xmin>691</xmin>
+            <ymin>430</ymin>
+            <xmax>728</xmax>
+            <ymax>594</ymax>
+        </bndbox>
+    </object>    <object>
+        <name>diamond</name>
+        <pose>Unspecified</pose>
+        <truncated>0</truncated>
+        <difficult>0</difficult>
+        <bndbox>
+            <xmin>729</xmin>
+            <ymin>392</ymin>
+            <xmax>783</xmax>
+            <ymax>632</ymax>
+        </bndbox>
+    </object>    <object>
+        <name>diamond</name>
+        <pose>Unspecified</pose>
+        <truncated>0</truncated>
+        <difficult>0</difficult>
+        <bndbox>
+            <xmin>783</xmin>
+            <ymin>438</ymin>
+            <xmax>816</xmax>
+            <ymax>586</ymax>
+        </bndbox>
+    </object>    <object>
+        <name>diamond</name>
+        <pose>Unspecified</pose>
+        <truncated>0</truncated>
+        <difficult>0</difficult>
+        <bndbox>
+            <xmin>817</xmin>
+            <ymin>535</ymin>
+            <xmax>807</xmax>
+            <ymax>489</ymax>
+        </bndbox>
+    </object>    <object>
+        <name>diamond</name>
+        <pose>Unspecified</pose>
+        <truncated>0</truncated>
+        <difficult>0</difficult>
+        <bndbox>
+            <xmin>807</xmin>
+            <ymin>326</ymin>
+            <xmax>891</xmax>
+            <ymax>698</ymax>
+        </bndbox>
+    </object>
+</annotation>
