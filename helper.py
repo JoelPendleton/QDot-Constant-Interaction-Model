@@ -20,29 +20,24 @@ class Helper:
         seq (object): the sequence of augmentation steps to perform on existing training examples.
     """
 
-
     def __init__(self):
         """
        The constructor for Helper class.
        """
-        if not os.path.exists("../data/train/image"):
-            os.makedirs("../data/train/image")
-        if not os.path.exists("../data/train/annotation"):
-            os.makedirs("../data/train/annotation")
-        if not os.path.exists("../data/train_augmented/image"):
-            os.makedirs("../data/train_augmented/image")
-        if not os.path.exists("../data/train_augmented/annotation"):
-            os.makedirs("../data/train_augmented/annotation")
-        if not os.path.exists("../data/val/image"):
-            os.makedirs("../data/val/image")
-        if not os.path.exists("../data/val/annotation"):
-            os.makedirs("../data/val/annotation")
+        if not os.path.exists("data/train/image"):
+            os.makedirs("./data/train/image")
+        if not os.path.exists("./data/train/annotation"):
+            os.makedirs("./data/train/annotation")
 
-        self.number_of_examples_created = len(os.listdir('../data/train/image'))
+        if not os.path.exists("./data/val/image"):
+            os.makedirs("data/val/image")
+        if not os.path.exists("./data/val/annotation"):
+            os.makedirs("./data/val/annotation")
+
+        self.number_of_examples_created = len(os.listdir('./data/train/image'))
         self.num_processes = int(multiprocessing.cpu_count() * 0.6)  # number of logical processors to utilise
 
-
-    '''Define function to run mutiple processors and pool the results together'''
+    'Define function to run mutiple processors and pool the results together'
 
     def simulate(self, i):
         """
@@ -54,11 +49,11 @@ class Helper:
             i (int): current iteration of the simulations.
         """
         dot_i = QuantumDot()
-        simulate = dot_i.simulate(i)
+        simulate = dot_i.simulate(i, self.noise, self.path)
 
         while simulate==False: # if there are no annotations produced try simulate again
             dot_i = QuantumDot()
-            simulate = dot_i.simulate(i)
+            simulate = dot_i.simulate(i, self.noise, self.path)
         return i
 
     def run_imap_multiprocessing(self, func, argument_list, num_processes):
@@ -90,7 +85,7 @@ class Helper:
         Returns:
             True upon completion
         """
-
+        #print(noise)
         #  imap: It only support functions with one dynamic argument
         func = self.simulate
         argument_list = list(range(1, number_of_examples + 1))
