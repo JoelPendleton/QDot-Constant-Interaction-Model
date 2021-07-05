@@ -396,7 +396,7 @@ class QuantumDot:
         positive_slope = self.C_G / (self.C_G + self.C_D)
         negative_slope = - self.C_G / self.C_S
 
-        writer = Writer(path + "/image/image_{0}.png".format(simulation_number), self.image_hw, self.image_hw)
+        writer = Writer(path + "image/image_{0}.png".format(simulation_number), self.image_hw, self.image_hw)
 
         diamonds_visible = 0
         for i in range(
@@ -432,11 +432,11 @@ class QuantumDot:
             else:
                 continue
 
-        if diamonds_visible < len(self.N): #  Used to be 1 but there were a lot of diamonds that where pretty much all there but not detected.
+        if diamonds_visible < 1: #  Used to be 1 but there were a lot of diamonds that where pretty much all there but not detected.
             # print("Retrying simulation of Quantum Dot", simulation_number)
             return False
         else:
-            fig.savefig(path + "/image/image_{0}.png".format(simulation_number), dpi=(128)) # Save training image
+            fig.savefig(path + "image/image_{0}.png".format(simulation_number), dpi=(128)) # Save training image
             plt.close()
             writer.save(path + "annotation/image_{0}.xml".format(simulation_number))
             return True
