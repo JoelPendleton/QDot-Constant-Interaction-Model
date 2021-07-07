@@ -420,10 +420,9 @@ class QuantumDot:
             # Parameters in standard units
 
             width = self.diamond_starts[0, i + 1] - self.diamond_starts[0, i]
-            x_centre = self.diamond_starts[0, i] + width/2
             x_left = self.diamond_starts[0, i] # start of diamond
             x_right = self.diamond_starts[0, i] + width # end of diamond
-            y_centre = 0
+
             # positive grad. top-left
             x_top = (positive_slope * self.diamond_starts[0, i] - negative_slope * self.diamond_starts[0, i + 1]) / (
                    positive_slope - negative_slope)  # analytical formula derived by equating equations of lines
@@ -437,8 +436,6 @@ class QuantumDot:
             x_corners = [x_left, x_right, x_top, x_bot]
             y_corners = [0, 0, y_top, y_bot]
 
-            plt.plot(x_corners, y_corners, '.g')
-
             # Convert parameters to their corresponding pixel values
 
             scale_x = self.image_hw / (self.V_G_max - self.V_G_min)
@@ -450,6 +447,7 @@ class QuantumDot:
             x_bot_scaled = int(x_bot * scale_x)
             y_top_scaled = int((y_top + self.V_SD_max) * scale_y)
             y_bot_scaled = int((y_bot + self.V_SD_max) * scale_y)
+            y_left_scaled = y_right_scaled = int((self.V_SD_max) * scale_y)
 
 
             if (x_right_scaled < self.image_hw) and (y_top_scaled < self.image_hw):
@@ -461,18 +459,21 @@ class QuantumDot:
                 ET.SubElement(object, "difficult").text = "0"
 
                 bndbox = ET.SubElement(object, "bndbox")
-                ET.SubElement(bndbox, "xmin").text = str(x_left_scaled)
-                ET.SubElement(bndbox, "ymin").text = str(y_bot_scaled)
-                ET.SubElement(bndbox, "xmax").text = str(x_right_scaled)
-                ET.SubElement(bndbox, "ymax").text = str(y_top_scaled)
-
-
+                ET.SubElement(bndbox, "x_left").text = str(x_left_scaled)
+                ET.SubElement(bndbox, "x_right").text = str(x_right_scaled)
+                ET.SubElement(bndbox, "x_top").text = str(x_top_scaled)
+                ET.SubElement(bndbox, "x_bot").text = str(x_bot_scaled)
+                ET.SubElement(bndbox, "y_left").text = str(y_left_scaled)
+                ET.SubElement(bndbox, "y_right").text = str(y_right_scaled)
+                ET.SubElement(bndbox, "y_top").text = str(y_top_scaled)
+                ET.SubElement(bndbox, "y_bot").text = str(y_bot_scaled)
 
                 diamonds_visible += 1
+                plt.plot(x_corners, y_corners, '.g') # plot edges of diamonds in green
             else:
                 continue
 
-        if diamonds_visible < 1: #  Used to be 1 but there were a lot of diamonds that where pretty much all there but not detected.
+        if diamonds_visible < 1:
             # print("Retrying simulation of Quantum Dot", simulation_number)
             return False
         else:
