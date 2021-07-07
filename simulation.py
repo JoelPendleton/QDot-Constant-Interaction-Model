@@ -412,6 +412,9 @@ class QuantumDot:
 
         ET.SubElement(root, "segmented").text = "0"
 
+        # x_points = []
+        # y_points = []
+
         for i in range(
                 len(self.N) - 1):  # need -1 as block would attempt to access index N otherwise and it doesn't exist
 
@@ -435,6 +438,9 @@ class QuantumDot:
 
             x_corners = [x_left, x_right, x_top, x_bot]
             y_corners = [0, 0, y_top, y_bot]
+
+            # x_points.extend(x_corners)
+            # y_points.extend(y_corners)
 
             # Convert parameters to their corresponding pixel values
 
@@ -469,7 +475,6 @@ class QuantumDot:
                 ET.SubElement(bndbox, "y_bot").text = str(y_bot_scaled)
 
                 diamonds_visible += 1
-                plt.plot(x_corners, y_corners, '.g') # plot edges of diamonds in green
             else:
                 continue
 
@@ -477,7 +482,9 @@ class QuantumDot:
             # print("Retrying simulation of Quantum Dot", simulation_number)
             return False
         else:
-            fig.savefig(path + "image/image_{0}.png".format(simulation_number), dpi=(128)) # Save training image
+            fig.savefig(path + "image/image_{0}.png".format(simulation_number), dpi=(128))  # Save training image
+            # plt.plot(x_points, y_points, color='lawngreen', fmt='.', marker='x')  # plot edges of diamonds in green
+            # fig.savefig(path + "image/image_{0}_corners.png".format(simulation_number), dpi=(128)) # Save training image
             tree = ET.ElementTree(root)
             tree.write(path + "annotation/image_{0}.xml".format(simulation_number))
             plt.close(fig)

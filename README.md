@@ -25,9 +25,10 @@ E.g.
 This generates a training set of size 100 and a validation with size 20,
 with noise.
 
-The program outputs XML files using the PASCAL VOC format with attributes xmin, xmax, ymin and ymax.
+The program outputs XML files using the PASCAL VOC format with attributes (x_left, y_left), (x_right, y_right),
+(x_top, y_top), (x_bot, y_bot) for each diamond, in each simulation. These attributes are the four corners of each diamond.   
 
-**Visual example of training example generated:**
+**Visual examples of training example generated:**
 
 <table>
    <tbody>
@@ -36,9 +37,13 @@ The program outputs XML files using the PASCAL VOC format with attributes xmin, 
        <td>Output</td>
      </tr> 
      <tr>
-       <td><img src="./example/simulation_example_input.png" width="500"></td>
-       <td><img src="./example/simulation_example_output.png" width="500"></td>
+       <td><img src="./example/example_image_1.png" width="500"></td>
+       <td><img src="./example/example_image_1_corners.png" width="500"></td>
      </tr > 
+     <tr>
+       <td><img src="./example/example_image_2.png" width="500"></td>
+       <td><img src="./example/example_image_2_corners.png" width="500"></td>
+     </tr >      
   </tbody>
 </table>
 
