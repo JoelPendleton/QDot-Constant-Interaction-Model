@@ -1,6 +1,4 @@
-Training Data/Training_Input/
-Training Data/Training_Output/
-Training Data/Training_Input_Augmented/
-Training Data/Training_Output_Augmented/
+data
 .idea
-simulation_example.png
+example
+__pycache__
