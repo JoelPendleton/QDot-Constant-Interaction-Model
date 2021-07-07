@@ -13,7 +13,7 @@ from random import random  # random generates a random number between 0 and 1
 from random import uniform # generates random float between specified range
 from random import randint
 from datetime import datetime
-from pascal_voc_writer import Writer
+import xml.etree.cElementTree as ET
 
 
 class QuantumDot:
@@ -396,38 +396,78 @@ class QuantumDot:
         positive_slope = self.C_G / (self.C_G + self.C_D)
         negative_slope = - self.C_G / self.C_S
 
-        writer = Writer(path + "image/image_{0}.png".format(simulation_number), self.image_hw, self.image_hw)
-
         diamonds_visible = 0
+
+        root = ET.Element("annotation")
+        ET.SubElement(root, "folder").text = "image"
+        ET.SubElement(root, "path").text = str(path + "image/image_{0}.png".format(simulation_number))
+
+        source = ET.SubElement(root, "source")
+        ET.SubElement(source, "database").text = "unknown"
+
+        size = ET.SubElement(root, "size")
+        ET.SubElement(size, "width").text = str(self.image_hw)
+        ET.SubElement(size, "height").text = str(self.image_hw)
+        ET.SubElement(size, "depth").text = "3"
+
+        ET.SubElement(root, "segmented").text = "0"
+
         for i in range(
                 len(self.N) - 1):  # need -1 as block would attempt to access index N otherwise and it doesn't exist
 
-            # positive grad. top-left
-            x_final = (positive_slope * self.diamond_starts[0, i] - negative_slope * self.diamond_starts[0, i + 1]) / (
-                    positive_slope - negative_slope)  # analytical formula derived by equating equations of lines
-            y_final = positive_slope * (x_final - self.diamond_starts[0, i])
-
             # Find relevant parameters for YOLO
 
-            # parameters in standard units
-            height_half = y_final # half of height of diamond
+            # Parameters in standard units
+
             width = self.diamond_starts[0, i + 1] - self.diamond_starts[0, i]
             x_centre = self.diamond_starts[0, i] + width/2
+            x_left = self.diamond_starts[0, i] # start of diamond
+            x_right = self.diamond_starts[0, i] + width # end of diamond
             y_centre = 0
+            # positive grad. top-left
+            x_top = (positive_slope * self.diamond_starts[0, i] - negative_slope * self.diamond_starts[0, i + 1]) / (
+                   positive_slope - negative_slope)  # analytical formula derived by equating equations of lines
+            y_top = positive_slope * (x_top - self.diamond_starts[0, i])
+
+            # positive grad. bottom-right
+            x_bot = (positive_slope * self.diamond_starts[0, i + 1] - negative_slope * self.diamond_starts[0, i]) / (
+                    positive_slope - negative_slope)
+            y_bot = positive_slope * (x_bot - self.diamond_starts[0, i + 1])
+
+            x_corners = [x_left, x_right, x_top, x_bot]
+            y_corners = [0, 0, y_top, y_bot]
+
+            plt.plot(x_corners, y_corners, '.g')
 
             # Convert parameters to their corresponding pixel values
+
             scale_x = self.image_hw / (self.V_G_max - self.V_G_min)
             scale_y = self.image_hw / (2 * self.V_SD_max)
-            height_half = int(height_half * scale_y)
-            width = int(width * scale_x)
-            diamond_centre = [int(x_centre * scale_x), int((y_centre + self.V_SD_max)*scale_y)]
-            xmin = int((diamond_centre[0] -width/2))
-            xmax = int((diamond_centre[0] + width/2))
-            ymin = int((diamond_centre[1] - height_half))
-            ymax = int((diamond_centre[1] + height_half))
 
-            if (xmax < self.image_hw) and (ymax < self.image_hw):
-                writer.addObject('diamond', xmin, ymin, xmax, ymax)
+            x_left_scaled = int(x_left * scale_x)
+            x_right_scaled = int(x_right * scale_x)
+            x_top_scaled = int(x_top * scale_x)
+            x_bot_scaled = int(x_bot * scale_x)
+            y_top_scaled = int((y_top + self.V_SD_max) * scale_y)
+            y_bot_scaled = int((y_bot + self.V_SD_max) * scale_y)
+
+
+            if (x_right_scaled < self.image_hw) and (y_top_scaled < self.image_hw):
+
+                object = ET.SubElement(root, "object")
+                ET.SubElement(object, "name").text = "diamond"
+                ET.SubElement(object, "pose").text = "Unspecified"
+                ET.SubElement(object, "truncated").text = "0"
+                ET.SubElement(object, "difficult").text = "0"
+
+                bndbox = ET.SubElement(object, "bndbox")
+                ET.SubElement(bndbox, "xmin").text = str(x_left_scaled)
+                ET.SubElement(bndbox, "ymin").text = str(y_bot_scaled)
+                ET.SubElement(bndbox, "xmax").text = str(x_right_scaled)
+                ET.SubElement(bndbox, "ymax").text = str(y_top_scaled)
+
+
+
                 diamonds_visible += 1
             else:
                 continue
@@ -437,7 +477,8 @@ class QuantumDot:
             return False
         else:
             fig.savefig(path + "image/image_{0}.png".format(simulation_number), dpi=(128)) # Save training image
+            tree = ET.ElementTree(root)
+            tree.write(path + "annotation/image_{0}.xml".format(simulation_number))
             plt.close(fig)
-            writer.save(path + "annotation/image_{0}.xml".format(simulation_number))
             return True
 
