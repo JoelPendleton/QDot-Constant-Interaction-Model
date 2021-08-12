@@ -21,7 +21,7 @@ The software has the following usage:
 - You should pass the **-help** flag if you require instructions on how to use the flags.
 
 E.g. 
-```python main.py --simulate 100 20 --noise```
+```python main.py -simulate 100 20 --noise```
 This generates a training set of size 100 and a validation with size 20,
 with noise.
 

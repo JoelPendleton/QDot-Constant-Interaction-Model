@@ -30,10 +30,10 @@ class QuantumDot:
         V_SD_max(float): range of source-drain voltage values. Units: V
         V_G_min (float): minimum value of gate voltage. Units: V
         V_G_max (float): maximum value of gate voltage. Units: V
-        V_SD(float): 1D numpy array of 1024 source-drain voltage values. Units: V
-        V_G(float): 1D numpy array of 1024 gate voltage values. Units: V
-        V_SD_grid (float): 2D numpy array of 1024 x 1024 source-drain voltage values. Units: V
-        V_G_grid (float): 2D numpy array of 1024 x 1024 gate voltage values. Units: V
+        V_SD(float): 1D numpy array of <image_hw> source-drain voltage values. Units: V
+        V_G(float): 1D numpy array of <image_hw> gate voltage values. Units: V
+        V_SD_grid (float): 2D numpy array of <image_hw> x <image_hw> source-drain voltage values. Units: V
+        V_G_grid (float): 2D numpy array of <image_hw> x <image_hw> gate voltage values. Units: V
     """
     seed(datetime.now())
     simCount = 0 # number of simulations
@@ -44,7 +44,7 @@ class QuantumDot:
     V_SD_max = 0.2
     V_G_min = 0.005
     V_G_max = 1.2
-    image_hw = 1024 # definition of image height and width (1000 pixels)
+    image_hw = 600 # definition of image height and width (600 pixels)
     V_SD = np.linspace(- V_SD_max, V_SD_max, image_hw) # random factor added so the diamonds
     # aren't always in the vertical centre.
 
@@ -258,7 +258,7 @@ class QuantumDot:
             False if no diamonds are within the voltage space (not successful)
         """
 
-        fig = plt.figure(figsize=(8,8))
+        fig = plt.figure(figsize=(6,6))
         ax = fig.add_axes([0, 0, 1, 1])
 
         E_N_previous = 0
@@ -403,7 +403,7 @@ class QuantumDot:
         ET.SubElement(root, "path").text = str(path + "image/image_{0}.png".format(simulation_number))
 
         source = ET.SubElement(root, "source")
-        ET.SubElement(source, "database").text = "unknown"
+        ET.SubElement(source, "database").text = "Quantum Dot Simulator"
 
         size = ET.SubElement(root, "size")
         ET.SubElement(size, "width").text = str(self.image_hw)
@@ -455,7 +455,6 @@ class QuantumDot:
             y_bot_scaled = int((y_bot + self.V_SD_max) * scale_y)
             y_left_scaled = y_right_scaled = int((self.V_SD_max) * scale_y)
 
-
             if (x_right_scaled < self.image_hw) and (y_top_scaled < self.image_hw):
 
                 object = ET.SubElement(root, "object")
@@ -465,16 +464,20 @@ class QuantumDot:
                 ET.SubElement(object, "difficult").text = "0"
 
                 bndbox = ET.SubElement(object, "bndbox")
-                ET.SubElement(bndbox, "x_left").text = str(x_left_scaled)
-                ET.SubElement(bndbox, "x_right").text = str(x_right_scaled)
-                ET.SubElement(bndbox, "x_top").text = str(x_top_scaled)
-                ET.SubElement(bndbox, "x_bot").text = str(x_bot_scaled)
-                ET.SubElement(bndbox, "y_left").text = str(y_left_scaled)
-                ET.SubElement(bndbox, "y_right").text = str(y_right_scaled)
-                ET.SubElement(bndbox, "y_top").text = str(y_top_scaled)
-                ET.SubElement(bndbox, "y_bot").text = str(y_bot_scaled)
+                ET.SubElement(bndbox, "x0").text = str(x_left_scaled)
+                ET.SubElement(bndbox, "y0").text = str(y_left_scaled)
+
+                ET.SubElement(bndbox, "x1").text = str(x_top_scaled)
+                ET.SubElement(bndbox, "y1").text = str(y_top_scaled)
+
+                ET.SubElement(bndbox, "x2").text = str(x_right_scaled)
+                ET.SubElement(bndbox, "y2").text = str(y_right_scaled)
+
+                ET.SubElement(bndbox, "x3").text = str(x_bot_scaled)
+                ET.SubElement(bndbox, "y3").text = str(y_bot_scaled)
 
                 diamonds_visible += 1
+
             else:
                 continue
 
@@ -482,7 +485,7 @@ class QuantumDot:
             # print("Retrying simulation of Quantum Dot", simulation_number)
             return False
         else:
-            fig.savefig(path + "image/image_{0}.png".format(simulation_number), dpi=(128))  # Save training image
+            fig.savefig(path + "image/image_{0}.png".format(simulation_number), dpi=(100))  # Save training image
             # plt.plot(x_points, y_points, color='lawngreen', fmt='.', marker='x')  # plot edges of diamonds in green
             # fig.savefig(path + "image/image_{0}_corners.png".format(simulation_number), dpi=(128)) # Save training image
             tree = ET.ElementTree(root)
