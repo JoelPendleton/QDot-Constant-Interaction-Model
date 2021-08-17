@@ -24,17 +24,17 @@ class Helper:
         """
        The constructor for Helper class.
        """
-        if not os.path.exists("data/train/image"):
-            os.makedirs("./data/train/image")
-        if not os.path.exists("./data/train/annotation"):
-            os.makedirs("./data/train/annotation")
+        if not os.path.exists("data/train/images"):
+            os.makedirs("./data/train/images")
+        if not os.path.exists("./data/train/labeltxt"):
+            os.makedirs("./data/train/labeltxt")
 
-        if not os.path.exists("./data/val/image"):
-            os.makedirs("data/val/image")
-        if not os.path.exists("./data/val/annotation"):
-            os.makedirs("./data/val/annotation")
+        if not os.path.exists("./data/val/images"):
+            os.makedirs("./data/val/images")
+        if not os.path.exists("./data/val/labeltxt"):
+            os.makedirs("./data/val/labeltxt")
 
-        self.number_of_examples_created = len(os.listdir('./data/train/image'))
+        self.number_of_examples_created = len(os.listdir('./data/train/images'))
         self.num_processes = int(multiprocessing.cpu_count() * 0.6)  # number of logical processors to utilise
 
     'Define function to run mutiple processors and pool the results together'

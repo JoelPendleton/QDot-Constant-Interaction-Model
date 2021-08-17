@@ -399,8 +399,8 @@ class QuantumDot:
         diamonds_visible = 0
 
         root = ET.Element("annotation")
-        ET.SubElement(root, "folder").text = "image"
-        ET.SubElement(root, "path").text = str(path + "image/image_{0}.png".format(simulation_number))
+        ET.SubElement(root, "folder").text = "images"
+        ET.SubElement(root, "path").text = str(path + "images/{0}.png".format(simulation_number))
 
         source = ET.SubElement(root, "source")
         ET.SubElement(source, "database").text = "Quantum Dot Simulator"
@@ -412,8 +412,8 @@ class QuantumDot:
 
         ET.SubElement(root, "segmented").text = "0"
 
-        # x_points = []
-        # y_points = []
+        x_points = []
+        y_points = []
 
         for i in range(
                 len(self.N) - 1):  # need -1 as block would attempt to access index N otherwise and it doesn't exist
@@ -436,9 +436,9 @@ class QuantumDot:
                     positive_slope - negative_slope)
             y_bot = positive_slope * (x_bot - self.diamond_starts[0, i + 1])
 
-            x_corners = [x_left, x_right, x_top, x_bot]
-            y_corners = [0, 0, y_top, y_bot]
-
+            # x_corners = [x_left, x_right, x_top, x_bot]
+            # y_corners = [0, 0, y_top, y_bot]
+            #
             # x_points.extend(x_corners)
             # y_points.extend(y_corners)
 
@@ -464,17 +464,19 @@ class QuantumDot:
                 ET.SubElement(object, "difficult").text = "0"
 
                 bndbox = ET.SubElement(object, "bndbox")
-                ET.SubElement(bndbox, "x0").text = str(x_left_scaled)
-                ET.SubElement(bndbox, "y0").text = str(y_left_scaled)
 
-                ET.SubElement(bndbox, "x1").text = str(x_top_scaled)
-                ET.SubElement(bndbox, "y1").text = str(y_top_scaled)
 
-                ET.SubElement(bndbox, "x2").text = str(x_right_scaled)
-                ET.SubElement(bndbox, "y2").text = str(y_right_scaled)
+                ET.SubElement(bndbox, "x0").text = str(x_top_scaled)
+                ET.SubElement(bndbox, "y0").text = str(y_top_scaled)
 
-                ET.SubElement(bndbox, "x3").text = str(x_bot_scaled)
-                ET.SubElement(bndbox, "y3").text = str(y_bot_scaled)
+                ET.SubElement(bndbox, "x1").text = str(x_right_scaled)
+                ET.SubElement(bndbox, "y1").text = str(y_right_scaled)
+
+                ET.SubElement(bndbox, "x2").text = str(x_bot_scaled)
+                ET.SubElement(bndbox, "y2").text = str(y_bot_scaled)
+
+                ET.SubElement(bndbox, "x3").text = str(x_left_scaled)
+                ET.SubElement(bndbox, "y3").text = str(y_left_scaled)
 
                 diamonds_visible += 1
 
@@ -485,11 +487,11 @@ class QuantumDot:
             # print("Retrying simulation of Quantum Dot", simulation_number)
             return False
         else:
-            fig.savefig(path + "image/image_{0}.png".format(simulation_number), dpi=(100))  # Save training image
-            # plt.plot(x_points, y_points, color='lawngreen', fmt='.', marker='x')  # plot edges of diamonds in green
-            # fig.savefig(path + "image/image_{0}_corners.png".format(simulation_number), dpi=(128)) # Save training image
+            fig.savefig(path + "images/{0}.png".format(simulation_number), dpi=(100))  # Save training image
+            # plt.scatter(x_points, y_points)  # plot edges of diamonds in green
+            # fig.savefig(path + "images/{0}_corners.png".format(simulation_number), dpi=(128)) # Save training image
             tree = ET.ElementTree(root)
-            tree.write(path + "annotation/image_{0}.xml".format(simulation_number))
+            tree.write(path + "labeltxt/{0}.xml".format(simulation_number))
             plt.close(fig)
             return True
 
