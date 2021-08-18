@@ -41,7 +41,7 @@ class QuantumDot:
     h = 4.1357E-15
     k_B = 8.6173E-5
     T = 0.01
-    V_SD_max = 0.2
+    V_SD_max = 0.3
     V_G_min = 0.005
     V_G_max = 1.2
     image_hw = 600 # definition of image height and width (600 pixels)
@@ -412,8 +412,8 @@ class QuantumDot:
 
         ET.SubElement(root, "segmented").text = "0"
 
-        x_points = []
-        y_points = []
+        # x_points = []
+        # y_points = []
 
         for i in range(
                 len(self.N) - 1):  # need -1 as block would attempt to access index N otherwise and it doesn't exist
@@ -423,39 +423,52 @@ class QuantumDot:
             # Parameters in standard units
 
             width = self.diamond_starts[0, i + 1] - self.diamond_starts[0, i]
-            x_left = self.diamond_starts[0, i] # start of diamond
-            x_right = self.diamond_starts[0, i] + width # end of diamond
-
+            D_x = self.diamond_starts[0, i] # start of diamond
+            D_y = 0
+            B_x = self.diamond_starts[0, i] + width # end of diamond
+            B_y = 0
             # positive grad. top-left
-            x_top = (positive_slope * self.diamond_starts[0, i] - negative_slope * self.diamond_starts[0, i + 1]) / (
+            A_x = (positive_slope * self.diamond_starts[0, i] - negative_slope * self.diamond_starts[0, i + 1]) / (
                    positive_slope - negative_slope)  # analytical formula derived by equating equations of lines
-            y_top = positive_slope * (x_top - self.diamond_starts[0, i])
+            A_y = positive_slope * (A_x - self.diamond_starts[0, i])
 
             # positive grad. bottom-right
-            x_bot = (positive_slope * self.diamond_starts[0, i + 1] - negative_slope * self.diamond_starts[0, i]) / (
+            C_x = (positive_slope * self.diamond_starts[0, i + 1] - negative_slope * self.diamond_starts[0, i]) / (
                     positive_slope - negative_slope)
-            y_bot = positive_slope * (x_bot - self.diamond_starts[0, i + 1])
+            C_y = positive_slope * (C_x - self.diamond_starts[0, i + 1])
 
-            # x_corners = [x_left, x_right, x_top, x_bot]
-            # y_corners = [0, 0, y_top, y_bot]
-            #
-            # x_points.extend(x_corners)
-            # y_points.extend(y_corners)
+            theta = np.arctan(positive_slope)
+            alpha = np.abs(np.arctan(negative_slope))
+            BtoA = np.sqrt((B_x - A_x)**2 + (B_y - A_y)**2)
+            DtoC = np.sqrt((C_x - D_x)**2 + (C_y - D_y)**2)
+            BtoP = BtoA * np.cos(np.pi - alpha - theta)
+            DtoQ = DtoC * np.cos(np.pi - alpha - theta)
+            P_x = B_x + BtoP * np.cos(theta)
+            P_y = B_y + BtoP * np.sin(theta)
+
+            Q_x = D_x - DtoQ * np.cos(theta)
+            Q_y = D_y - DtoQ * np.sin(theta)
+
+            # x_corners = [A_x, P_x, C_x, Q_x]
+            # y_corners = [A_y, P_y, C_y, Q_y]
+            # if i < 1:
+            #     x_points.extend(x_corners)
+            #     y_points.extend(y_corners)
 
             # Convert parameters to their corresponding pixel values
 
             scale_x = self.image_hw / (self.V_G_max - self.V_G_min)
             scale_y = self.image_hw / (2 * self.V_SD_max)
 
-            x_left_scaled = int(x_left * scale_x)
-            x_right_scaled = int(x_right * scale_x)
-            x_top_scaled = int(x_top * scale_x)
-            x_bot_scaled = int(x_bot * scale_x)
-            y_top_scaled = int((y_top + self.V_SD_max) * scale_y)
-            y_bot_scaled = int((y_bot + self.V_SD_max) * scale_y)
-            y_left_scaled = y_right_scaled = int((self.V_SD_max) * scale_y)
+            Q_x_scaled = int(Q_x * scale_x)
+            P_x_scaled = int(P_x * scale_x)
+            A_x_scaled = int(A_x * scale_x)
+            C_x_scaled = int(C_x * scale_x)
+            A_y_scaled = int((A_y + self.V_SD_max) * scale_y)
+            C_y_scaled = int((C_y + self.V_SD_max) * scale_y)
+            Q_y_scaled = P_y_scaled = int((self.V_SD_max) * scale_y)
 
-            if (x_right_scaled < self.image_hw) and (y_top_scaled < self.image_hw):
+            if (P_x_scaled < self.image_hw) and (A_y_scaled < self.image_hw):
 
                 object = ET.SubElement(root, "object")
                 ET.SubElement(object, "name").text = "diamond"
@@ -466,17 +479,17 @@ class QuantumDot:
                 bndbox = ET.SubElement(object, "bndbox")
 
 
-                ET.SubElement(bndbox, "x0").text = str(x_top_scaled)
-                ET.SubElement(bndbox, "y0").text = str(y_top_scaled)
+                ET.SubElement(bndbox, "x0").text = str(A_x_scaled)
+                ET.SubElement(bndbox, "y0").text = str(A_y_scaled)
 
-                ET.SubElement(bndbox, "x1").text = str(x_right_scaled)
-                ET.SubElement(bndbox, "y1").text = str(y_right_scaled)
+                ET.SubElement(bndbox, "x1").text = str(P_x_scaled)
+                ET.SubElement(bndbox, "y1").text = str(P_y_scaled)
 
-                ET.SubElement(bndbox, "x2").text = str(x_bot_scaled)
-                ET.SubElement(bndbox, "y2").text = str(y_bot_scaled)
+                ET.SubElement(bndbox, "x2").text = str(C_x_scaled)
+                ET.SubElement(bndbox, "y2").text = str(C_y_scaled)
 
-                ET.SubElement(bndbox, "x3").text = str(x_left_scaled)
-                ET.SubElement(bndbox, "y3").text = str(y_left_scaled)
+                ET.SubElement(bndbox, "x3").text = str(Q_x_scaled)
+                ET.SubElement(bndbox, "y3").text = str(Q_y_scaled)
 
                 diamonds_visible += 1
 
@@ -485,6 +498,7 @@ class QuantumDot:
 
         if diamonds_visible < 1:
             # print("Retrying simulation of Quantum Dot", simulation_number)
+            #fig.clear()
             return False
         else:
             fig.savefig(path + "images/{0}.png".format(simulation_number), dpi=(100))  # Save training image
@@ -492,6 +506,7 @@ class QuantumDot:
             # fig.savefig(path + "images/{0}_corners.png".format(simulation_number), dpi=(128)) # Save training image
             tree = ET.ElementTree(root)
             tree.write(path + "labeltxt/{0}.xml".format(simulation_number))
+            #fig.clear()
             plt.close(fig)
             return True
 
