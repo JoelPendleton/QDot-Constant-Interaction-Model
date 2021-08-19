@@ -460,16 +460,27 @@ class QuantumDot:
 
             # Convert parameters to their corresponding pixel values
 
-            scale_x = self.image_hw / (self.V_G_max - self.V_G_min)
-            scale_y = self.image_hw / (2 * self.V_SD_max)
+            # scale_x = self.image_hw / (self.V_G_max - self.V_G_min)
+            # scale_y = self.image_hw / (2 * self.V_SD_max)
+            #
+            # Q_x_scaled = int(Q_x * scale_x)
+            # P_x_scaled = int(P_x * scale_x)
+            # A_x_scaled = int(A_x * scale_x)
+            # C_x_scaled = int(C_x * scale_x)
+            # A_y_scaled = int((A_y + self.V_SD_max) * scale_y)
+            # C_y_scaled = int((C_y + self.V_SD_max) * scale_y)
+            # Q_y_scaled = P_y_scaled = int((self.V_SD_max) * scale_y)
 
-            Q_x_scaled = int(Q_x * scale_x)
-            P_x_scaled = int(P_x * scale_x)
-            A_x_scaled = int(A_x * scale_x)
-            C_x_scaled = int(C_x * scale_x)
-            A_y_scaled = int((A_y + self.V_SD_max) * scale_y)
-            C_y_scaled = int((C_y + self.V_SD_max) * scale_y)
-            Q_y_scaled = P_y_scaled = int((self.V_SD_max) * scale_y)
+
+            A_x_scaled, A_y_scaled = ax.transData.transform((A_x,A_y))
+            A_y_scaled = self.image_hw - A_y_scaled
+            C_x_scaled, C_y_scaled = ax.transData.transform((C_x,C_y))
+            C_y_scaled = self.image_hw - C_y_scaled
+            Q_x_scaled, Q_y_scaled = ax.transData.transform((Q_x,Q_y))
+            Q_y_scaled = self.image_hw - Q_y_scaled
+            P_x_scaled, P_y_scaled = ax.transData.transform((P_x,P_y))
+            P_y_scaled = self.image_hw - P_y_scaled
+
 
             if (P_x_scaled < self.image_hw) and (A_y_scaled < self.image_hw):
 
