@@ -258,7 +258,7 @@ class QuantumDot:
             False if no diamonds are within the voltage space (not successful)
         """
 
-        fig = plt.figure(figsize=(6,6))
+        fig = plt.figure(simulation_number, figsize=(6,6))
         ax = fig.add_axes([0, 0, 1, 1])
 
         E_N_previous = 0
@@ -507,6 +507,6 @@ class QuantumDot:
             tree = ET.ElementTree(root)
             tree.write(path + "labeltxt/{0}.xml".format(simulation_number))
             #fig.clear()
-            plt.close(fig)
+            plt.close(simulation_number)
             return True
 
