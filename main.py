@@ -8,6 +8,8 @@
 
 from helper import Helper
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 
 # Flag 1 -> -Simulate or -Help
 # Flag 2 -> Number of training examples

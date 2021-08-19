@@ -15,7 +15,7 @@ from random import randint
 from datetime import datetime
 import xml.etree.cElementTree as ET
 import warnings
-warnings.filterwarnings( "ignore", module = "matplotlib\..*" )
+warnings.filterwarnings("ignore")
 
 
 

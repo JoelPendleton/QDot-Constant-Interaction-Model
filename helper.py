@@ -11,6 +11,8 @@ from simulation import QuantumDot
 import os
 from tqdm import tqdm
 from multiprocessing import Pool
+import warnings
+warnings.filterwarnings("ignore")
 
 class Helper:
     """
