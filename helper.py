@@ -93,6 +93,6 @@ class Helper:
         # print("Running imap multiprocessing for single-argument functions ...")
         result_list = self.run_imap_multiprocessing(func=func, argument_list=argument_list, num_processes=self.num_processes)
         assert result_list == argument_list
-        return True
+
 
 
