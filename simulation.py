@@ -47,7 +47,7 @@ class QuantumDot:
     V_SD_max = 0.3
     V_G_min = 0.005
     V_G_max = 1.2
-    image_hw = 600 # definition of image height and width (600 pixels)
+    image_hw = 300 # definition of image height and width (300 pixels)
     V_SD = np.linspace(- V_SD_max, V_SD_max, image_hw) # random factor added so the diamonds
     # aren't always in the vertical centre.
 
@@ -261,7 +261,7 @@ class QuantumDot:
             False if no diamonds are within the voltage space (not successful)
         """
 
-        fig = plt.figure(simulation_number, figsize=(6,6))
+        fig = plt.figure(simulation_number, figsize=(3,3))
         ax = fig.add_axes([0, 0, 1, 1])
 
         E_N_previous = 0
