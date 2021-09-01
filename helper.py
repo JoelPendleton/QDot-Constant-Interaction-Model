@@ -31,10 +31,10 @@ class Helper:
         if not os.path.exists("./data/train/labeltxt"):
             os.makedirs("./data/train/labeltxt")
 
-        if not os.path.exists("./data/val/images"):
-            os.makedirs("./data/val/images")
-        if not os.path.exists("./data/val/labeltxt"):
-            os.makedirs("./data/val/labeltxt")
+        if not os.path.exists("./data/test/images"):
+            os.makedirs("./data/test/images")
+        if not os.path.exists("./data/test/labeltxt"):
+            os.makedirs("./data/test/labeltxt")
 
         self.number_of_examples_created = len(os.listdir('./data/train/images'))
         self.num_processes = int(multiprocessing.cpu_count() * 0.6)  # number of logical processors to utilise
