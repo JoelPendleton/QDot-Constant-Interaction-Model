@@ -261,7 +261,7 @@ class QuantumDot:
             False if no diamonds are within the voltage space (not successful)
         """
 
-        fig = plt.figure(simulation_number, figsize=(3,3))
+        fig = plt.figure(simulation_number, figsize=(5,5))
         ax = fig.add_axes([0, 0, 1, 1])
 
         E_N_previous = 0
@@ -452,26 +452,6 @@ class QuantumDot:
             Q_x = D_x - DtoQ * np.cos(theta)
             Q_y = D_y - DtoQ * np.sin(theta)
 
-            # x_corners = [A_x, P_x, C_x, Q_x]
-            # y_corners = [A_y, P_y, C_y, Q_y]
-            # if i < 1:
-            #     x_points.extend(x_corners)
-            #     y_points.extend(y_corners)
-
-            # Convert parameters to their corresponding pixel values
-
-            # scale_x = self.image_hw / (self.V_G_max - self.V_G_min)
-            # scale_y = self.image_hw / (2 * self.V_SD_max)
-            #
-            # Q_x_scaled = int(Q_x * scale_x)
-            # P_x_scaled = int(P_x * scale_x)
-            # A_x_scaled = int(A_x * scale_x)
-            # C_x_scaled = int(C_x * scale_x)
-            # A_y_scaled = int((A_y + self.V_SD_max) * scale_y)
-            # C_y_scaled = int((C_y + self.V_SD_max) * scale_y)
-            # Q_y_scaled = P_y_scaled = int((self.V_SD_max) * scale_y)
-
-
             A_x_scaled, A_y_scaled = ax.transData.transform((A_x,A_y))
             A_y_scaled = self.image_hw - A_y_scaled
             C_x_scaled, C_y_scaled = ax.transData.transform((C_x,C_y))
@@ -504,6 +484,16 @@ class QuantumDot:
 
                 ET.SubElement(bndbox, "x3").text = str(Q_x_scaled)
                 ET.SubElement(bndbox, "y3").text = str(Q_y_scaled)
+
+                # print("These are the corners of the bounding box:")
+                # print(A_x, A_y)
+                # print(P_x, P_y)
+                # print(C_x, C_y)
+                # print(Q_x, Q_y)
+                #
+                # print("\nStart of diamonds are:")
+                # print(D_x)
+                # print(B_x)
 
                 diamonds_visible += 1
 
