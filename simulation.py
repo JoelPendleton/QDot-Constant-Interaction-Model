@@ -464,7 +464,9 @@ class QuantumDot:
             P_y_scaled = self.image_hw - P_y_scaled
 
 
-            if (P_x_scaled < self.image_hw) and (Q_x_scaled > -50):
+            condition_1 = (P_x_scaled < (self.image_hw + 30)) and (Q_x_scaled > -30)
+            condition_2 = (C_y_scaled < (self.image_hw + 30)) and (A_y_scaled > -30)
+            if (condition_1 and condition_2):
 
                 object = ET.SubElement(root, "object")
                 ET.SubElement(object, "name").text = "diamond"
