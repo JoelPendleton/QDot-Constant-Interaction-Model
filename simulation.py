@@ -33,10 +33,10 @@ class QuantumDot:
         V_SD_max(float): range of source-drain voltage values. Units: V
         V_G_min (float): minimum value of gate voltage. Units: V
         V_G_max (float): maximum value of gate voltage. Units: V
-        V_SD(float): 1D numpy array of <image_hw> source-drain voltage values. Units: V
-        V_G(float): 1D numpy array of <image_hw> gate voltage values. Units: V
-        V_SD_grid (float): 2D numpy array of <image_hw> x <image_hw> source-drain voltage values. Units: V
-        V_G_grid (float): 2D numpy array of <image_hw> x <image_hw> gate voltage values. Units: V
+        V_SD(float): 1D numpy array of <volt_steps> source-drain voltage values. Units: V
+        V_G(float): 1D numpy array of <volt_steps> gate voltage values. Units: V
+        V_SD_grid (float): 2D numpy array of <volt_steps> x <volt_steps> source-drain voltage values. Units: V
+        V_G_grid (float): 2D numpy array of <volt_steps> x <volt_steps> gate voltage values. Units: V
     """
     seed(datetime.now())
     simCount = 0 # number of simulations
@@ -44,14 +44,16 @@ class QuantumDot:
     h = 4.1357E-15
     k_B = 8.6173E-5
     T = 0.01
-    V_SD_max = 0.3
-    V_G_min = 0.005
-    V_G_max = 1.2
-    image_hw = 300 # definition of image height and width (300 pixels)
-    V_SD = np.linspace(- V_SD_max, V_SD_max, image_hw) # random factor added so the diamonds
+    V_SD_max = uniform(0.08,0.2)
+    V_G_min = uniform(0.005,0.4)
+    V_G_max = uniform(1,2)
+    image_hw = 500 # pixel resolution of image (image_hw x image_hw)
+    volt_steps = randint(100, 250) # number of steps
+
+    V_SD = np.linspace(- V_SD_max, V_SD_max, volt_steps) # random factor added so the diamonds
     # aren't always in the vertical centre.
 
-    V_G = np.linspace(V_G_min, V_G_max, image_hw)
+    V_G = np.linspace(V_G_min, V_G_max, volt_steps)
 
     # Generate 2D array to represent possible voltage combinations
     V_SD_grid, V_G_grid = np.meshgrid(V_SD, V_G)
@@ -76,7 +78,7 @@ class QuantumDot:
        """
         QuantumDot.simCount += 1
         seed(datetime.now())  # use current time as random number seed
-        self.N = range(1, randint(2, 10))
+        self.N = range(1, 50)
         self.N_0 = 0
         self.I_tot = np.zeros(self.V_SD_grid.shape)
         self.diamond_starts = np.zeros((1, len(self.N)))
@@ -101,7 +103,7 @@ class QuantumDot:
         """
 
         # arbitrary formula used to increase diamond width as more electrons are added
-        E_N = self.E_C * (((n) ** 2 - (n - 1) ** 2) / n * 5 + random() / 9 * n)
+        E_N = self.E_C * (n ** 2 - (n - 1) ** 2)# / n * 5 #+ random() / 9 * n)
 
         mu_N = (n - self.N_0 - 1 / 2) * self.E_C - (self.E_C / self.e) * (self.C_S * self.V_SD_grid + self.C_G * self.V_G_grid) + E_N
 
@@ -261,7 +263,7 @@ class QuantumDot:
             False if no diamonds are within the voltage space (not successful)
         """
 
-        fig = plt.figure(simulation_number, figsize=(5,5))
+        fig = plt.figure(simulation_number, figsize=(self.image_hw/100,self.image_hw/100))
         ax = fig.add_axes([0, 0, 1, 1])
 
         E_N_previous = 0
@@ -377,7 +379,7 @@ class QuantumDot:
         I_max_abs = np.max(I_tot_abs)
         I_min_abs = np.min(I_tot_abs)
 
-        # I_grad_V_SD, I_grad_V_G = np.gradient(I_tot_abs)
+        I_grad_V_SD, I_grad_V_G = np.gradient(I_tot_abs)
 
         # Plot diamonds (current)
         ax.contourf(self.V_G_grid, self.V_SD_grid, I_tot_abs, cmap="seismic",
@@ -462,7 +464,7 @@ class QuantumDot:
             P_y_scaled = self.image_hw - P_y_scaled
 
 
-            if (P_x_scaled < self.image_hw) and (A_y_scaled < self.image_hw):
+            if (P_x_scaled < self.image_hw) and (Q_x_scaled > -50):
 
                 object = ET.SubElement(root, "object")
                 ET.SubElement(object, "name").text = "diamond"
@@ -501,7 +503,7 @@ class QuantumDot:
                 continue
 
         if diamonds_visible < 1:
-            # print("Retrying simulation of Quantum Dot", simulation_number)
+            print("Retrying simulation of Quantum Dot", simulation_number)
             #fig.clear()
             return False
         else:
