@@ -505,7 +505,7 @@ class QuantumDot:
                 continue
 
         if diamonds_visible < 1:
-            print("Retrying simulation of Quantum Dot", simulation_number)
+            #print("Retrying simulation of Quantum Dot", simulation_number)
             #fig.clear()
             return False
         else:
