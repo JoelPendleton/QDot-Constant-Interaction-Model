@@ -49,6 +49,7 @@ if __name__ == "__main__":
             helper.noise = noise
             if argument_2 > 0:
                 helper.path = "./data/train/"
+                print(argument_2)
                 helper.generate_examples(argument_2) # generate training set
                 print("Training set saved to", helper.path)
             if argument_3 > 0:
