@@ -383,7 +383,7 @@ class QuantumDot:
 
         # Plot diamonds (current)
         ax.contourf(self.V_G_grid, self.V_SD_grid, I_tot_abs, cmap="gray",
-                               levels=np.linspace(I_min_abs, I_max_abs, uniform(150,500)))  # draw contours of diamonds
+                               levels=np.linspace(I_min_abs, I_max_abs, randint(150,500)))  # draw contours of diamonds
 
         ax.axis('off')
 
