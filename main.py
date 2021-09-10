@@ -31,35 +31,34 @@ if __name__ == "__main__":
                   " set, respectively. They must be integers"
                   "\nIf you want noise on your examples add the --noise flag at the end of the line.")
         elif argument_1 == "-simulate":
-            # try:
-            argument_2 = int(sys.argv[2]) # training-size
-            argument_3 = int(sys.argv[3]) # test-size
             try:
-                argument_4 = sys.argv[4] # --noise
-                if argument_4 == "--noise":
-                    noise = True
-            except IndexError:
-                noise = False
-                pass
+                argument_2 = int(sys.argv[2]) # training-size
+                argument_3 = int(sys.argv[3]) # test-size
+                try:
+                    argument_4 = sys.argv[4] # --noise
+                    if argument_4 == "--noise":
+                        noise = True
+                except IndexError:
+                    noise = False
+                    pass
 
-            if noise:
-                print("Generating training data with added noise...")
-            else:
-                print("Generating training data...")
-            helper.noise = noise
-            if argument_2 > 0:
-                helper.path = "./data/train/"
-                print(argument_2)
-                helper.generate_examples(argument_2) # generate training set
-                print("Training set saved to", helper.path)
-            if argument_3 > 0:
-                helper.path = "./data/test/"
-                helper.generate_examples(argument_3)  # generate test set
-                print("Test set saved to", helper.path)
+                if noise:
+                    print("Generating training data with added noise...")
+                else:
+                    print("Generating training data...")
+                helper.noise = noise
+                if argument_2 > 0:
+                    helper.path = "./data/train/"
+                    helper.generate_examples(argument_2) # generate training set
+                    print("Training set saved to", helper.path)
+                if argument_3 > 0:
+                    helper.path = "./data/test/"
+                    helper.generate_examples(argument_3)  # generate test set
+                    print("Test set saved to", helper.path)
 
-            # except (IndexError, TypeError):
-            #     print("Make sure to pass the required arguments."
-            #           "\nTo see how to do this call python main.py -help")
+            except (IndexError, TypeError):
+                print("Make sure to pass the required arguments."
+                      "\nTo see how to do this call python main.py -help")
         else:
             print("Make sure to pass the required arguments."
                   "\nTo see how to do this call python main.py -help")
