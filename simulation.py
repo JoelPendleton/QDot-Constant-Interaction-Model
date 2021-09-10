@@ -48,7 +48,7 @@ class QuantumDot:
     V_G_min = uniform(0.005,0.4)
     V_G_max = uniform(1,2)
     image_hw = 500 # pixel resolution of image (image_hw x image_hw)
-    volt_steps = randint(100, 250) # number of steps
+    volt_steps = randint(80, 150) # number of steps
 
     V_SD = np.linspace(- V_SD_max, V_SD_max, volt_steps) # random factor added so the diamonds
     # aren't always in the vertical centre.
@@ -360,7 +360,7 @@ class QuantumDot:
             thermalNoise = np.random.normal(loc=0, scale=1, size=self.V_SD_grid.shape)
             g_0 = self.I_tot / self.V_SD_grid
             I_thermalNoise = np.sqrt(4 * self.k_B * self.e * self.T * np.abs(g_0)) * thermalNoise
-            self.I_tot += I_thermalNoise
+            #self.I_tot += I_thermalNoise # when I uncomment this makes the image white
 
             'SHOT noise implementation'
             shotNoise = np.random.normal(loc=0, scale=1, size=self.V_SD_grid.shape)
@@ -382,13 +382,13 @@ class QuantumDot:
         I_grad_V_SD, I_grad_V_G = np.gradient(I_tot_abs)
 
         # Plot diamonds (current)
-        ax.contourf(self.V_G_grid, self.V_SD_grid, I_tot_abs, cmap="seismic",
-                               levels=np.linspace(I_min_abs, I_max_abs, 500))  # draw contours of diamonds
+        ax.contourf(self.V_G_grid, self.V_SD_grid, I_tot_abs, cmap="gray",
+                               levels=np.linspace(I_min_abs, I_max_abs, uniform(150,500)))  # draw contours of diamonds
 
         ax.axis('off')
 
         # Plot diamonds (gradient)
-        # plt.contourf(self.V_G_grid, self.V_SD_grid, I_grad_V_SD, cmap="seismic",
+        # plt.contourf(self.V_G_grid, self.V_SD_grid, np.abs(I_grad_V_SD), cmap="gray",
         #              levels=np.linspace(np.min(I_grad_V_SD), np.max(I_grad_V_SD), 500))  # draw contours of diamonds
 
 
@@ -464,8 +464,8 @@ class QuantumDot:
             P_y_scaled = self.image_hw - P_y_scaled
 
 
-            condition_1 = (P_x_scaled < (self.image_hw + 30)) and (Q_x_scaled > -30)
-            condition_2 = (C_y_scaled < (self.image_hw + 30)) and (A_y_scaled > -30)
+            condition_1 = (P_x_scaled < (self.image_hw - 30)) and (Q_x_scaled > 30)
+            condition_2 = (C_y_scaled < (self.image_hw - 30)) and (A_y_scaled > 30)
             if (condition_1 and condition_2):
 
                 object = ET.SubElement(root, "object")
