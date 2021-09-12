@@ -1,7 +1,7 @@
 # -----------------------------------------------------------
 # Single Quantum Dot Simulator that is used to Generate Training Examples for a CNN.
 #
-# (C) 2020 Joel Pendleton, London, UK
+# (C) 2021 Joel Pendleton, London, UK
 # Released under MIT license
 # email joel.pendleton@quantummotion.tech
 # -----------------------------------------------------------
@@ -44,8 +44,8 @@ class QuantumDot:
     h = 4.1357E-15
     k_B = 8.6173E-5
     T = 0.01
-    V_SD_max = uniform(0.08,0.2)
-    V_G_min = uniform(0.005,0.4)
+    V_SD_max = uniform(0.08,0.3)
+    V_G_min = uniform(0.005,0.3)
     V_G_max = uniform(1,2)
     image_hw = 500 # pixel resolution of image (image_hw x image_hw)
     volt_steps = randint(80, 150) # number of steps
@@ -417,13 +417,8 @@ class QuantumDot:
 
         ET.SubElement(root, "segmented").text = "0"
 
-        # x_points = []
-        # y_points = []
-
         for i in range(
                 len(self.N) - 1):  # need -1 as block would attempt to access index N otherwise and it doesn't exist
-
-            # Find relevant parameters for YOLO
 
             # Parameters in standard units
 
@@ -489,16 +484,6 @@ class QuantumDot:
                 ET.SubElement(bndbox, "x3").text = str(Q_x_scaled)
                 ET.SubElement(bndbox, "y3").text = str(Q_y_scaled)
 
-                # print("These are the corners of the bounding box:")
-                # print(A_x, A_y)
-                # print(P_x, P_y)
-                # print(C_x, C_y)
-                # print(Q_x, Q_y)
-                #
-                # print("\nStart of diamonds are:")
-                # print(D_x)
-                # print(B_x)
-
                 diamonds_visible += 1
 
             else:
@@ -506,15 +491,11 @@ class QuantumDot:
 
         if diamonds_visible < 1:
             #print("Retrying simulation of Quantum Dot", simulation_number)
-            #fig.clear()
             return False
         else:
             fig.savefig(path + "images/{0}.png".format(simulation_number), dpi=(100))  # Save training image
-            # plt.scatter(x_points, y_points)  # plot edges of diamonds in green
-            # fig.savefig(path + "images/{0}_corners.png".format(simulation_number), dpi=(128)) # Save training image
             tree = ET.ElementTree(root)
             tree.write(path + "labeltxt/{0}.xml".format(simulation_number))
-            #fig.clear()
             plt.close(simulation_number)
             return True
 

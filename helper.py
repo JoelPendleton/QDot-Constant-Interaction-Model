@@ -1,7 +1,7 @@
 # -----------------------------------------------------------
 # Single Quantum Dot Simulator that is used to Generate Training Examples for a CNN.
 #
-# (C) 2020 Joel Pendleton, London, UK
+# (C) 2021 Joel Pendleton, London, UK
 # Released under MIT license
 # email joel.pendleton@quantummotion.tech
 # -----------------------------------------------------------
