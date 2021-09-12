@@ -17,8 +17,6 @@ import xml.etree.cElementTree as ET
 import warnings
 warnings.filterwarnings("ignore")
 
-
-
 class QuantumDot:
 
     """
@@ -459,8 +457,8 @@ class QuantumDot:
             P_y_scaled = self.image_hw - P_y_scaled
 
 
-            condition_1 = (P_x_scaled < (self.image_hw - 30)) and (Q_x_scaled > 30)
-            condition_2 = (C_y_scaled < (self.image_hw - 30)) and (A_y_scaled > 30)
+            condition_1 = (P_x_scaled < (self.image_hw - 10)) and (Q_x_scaled > 10)
+            condition_2 = (C_y_scaled < (self.image_hw - 10)) and (A_y_scaled > 10)
             if (condition_1 and condition_2):
 
                 object = ET.SubElement(root, "object")
@@ -493,9 +491,9 @@ class QuantumDot:
             #print("Retrying simulation of Quantum Dot", simulation_number)
             return False
         else:
-            fig.savefig(path + "images/{0}.png".format(simulation_number), dpi=(100))  # Save training image
+            fig.savefig(path + "images/{0}.png".format(simulation_number + 10000), dpi=(100))  # Save training image
             tree = ET.ElementTree(root)
-            tree.write(path + "labeltxt/{0}.xml".format(simulation_number))
+            tree.write(path + "labeltxt/{0}.xml".format(simulation_number + 10000))
             plt.close(simulation_number)
             return True
 
