@@ -25,7 +25,7 @@ E.g.
 This generates a training set of size 100 and a validation with size 20,
 with noise.
 
-The program outputs XML files using the same formatting as the DOTA dataset. 
+The program outputs XML files using the same formatting as the <a href="https://captain-whu.github.io/DOTA/dataset.html">DOTA dataset</a>. 
 </br>Examples of outputted XML files are provided in the example folder. The attributes x0, y0, etc. are the four 
 </br>corners of the bounding box for the diamond.   
 
