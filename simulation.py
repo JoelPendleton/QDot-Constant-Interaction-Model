@@ -8,6 +8,7 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.patches as patches
 from random import seed # generates seed for random number generator
 from random import random  # random generates a random number between 0 and 1
 from random import uniform # generates random float between specified range
@@ -380,7 +381,7 @@ class QuantumDot:
         I_grad_V_SD, I_grad_V_G = np.gradient(I_tot_abs)
 
         # Plot diamonds (current)
-        ax.contourf(self.V_G_grid, self.V_SD_grid, I_tot_abs, cmap="gray",
+        ax.contourf(self.V_G_grid, self.V_SD_grid, I_tot_abs, cmap="seismic",
                                levels=np.linspace(I_min_abs, I_max_abs, randint(150,500)))  # draw contours of diamonds
 
         ax.axis('off')
@@ -414,7 +415,7 @@ class QuantumDot:
         ET.SubElement(size, "depth").text = "3"
 
         ET.SubElement(root, "segmented").text = "0"
-
+        fig.savefig(path + "images/{0}_no_bb.png".format(simulation_number), dpi=(100))  # Save training image
         for i in range(
                 len(self.N) - 1):  # need -1 as block would attempt to access index N otherwise and it doesn't exist
 
@@ -457,9 +458,16 @@ class QuantumDot:
             P_y_scaled = self.image_hw - P_y_scaled
 
 
+
             condition_1 = (P_x_scaled < (self.image_hw - 10)) and (Q_x_scaled > 10)
             condition_2 = (C_y_scaled < (self.image_hw - 10)) and (A_y_scaled > 10)
             if (condition_1 and condition_2):
+                xy = np.array([[A_x,A_y],
+                              [P_x,P_y],
+                              [C_x,C_y],
+                              [Q_x,Q_y]])
+                p1 = patches.Polygon(xy, linewidth=1, edgecolor='g', facecolor='none')
+                ax.add_patch(p1)
 
                 object = ET.SubElement(root, "object")
                 ET.SubElement(object, "name").text = "diamond"
@@ -491,9 +499,9 @@ class QuantumDot:
             #print("Retrying simulation of Quantum Dot", simulation_number)
             return False
         else:
-            fig.savefig(path + "images/{0}.png".format(simulation_number + 10000), dpi=(100))  # Save training image
+            fig.savefig(path + "images/{0}.png".format(simulation_number), dpi=(100))  # Save training image
             tree = ET.ElementTree(root)
-            tree.write(path + "labeltxt/{0}.xml".format(simulation_number + 10000))
+            tree.write(path + "labeltxt/{0}.xml".format(simulation_number))
             plt.close(simulation_number)
             return True
 

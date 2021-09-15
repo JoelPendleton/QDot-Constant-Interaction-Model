@@ -25,8 +25,9 @@ E.g.
 This generates a training set of size 100 and a validation with size 20,
 with noise.
 
-The program outputs XML files using the PASCAL VOC format with attributes (x_left, y_left), (x_right, y_right),
-(x_top, y_top), (x_bot, y_bot) for each diamond, in each simulation. These attributes are the four corners of each diamond.   
+The program outputs XML files using the same formatting as the DOTA dataset. 
+</br>Examples of outputted XML files are provided in the example folder. The attributes x0, y0, etc. are the four 
+</br>corners of the bounding box for the diamond.   
 
 **Visual examples of training example generated:**
 
