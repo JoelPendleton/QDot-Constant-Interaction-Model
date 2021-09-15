@@ -42,8 +42,9 @@ The program outputs XML files using the same formatting as the DOTA dataset.
        <td><img src="./example/example_image_1_bb.png" width="500"></td>
      </tr > 
      <tr>
+        <td><img src="./example/example_image_2_bb.png" width="500"></td>
        <td><img src="./example/example_image_2.png" width="500"></td>
-       <td><img src="./example/example_image_2_bb.png" width="500"></td>
+       
      </tr >      
   </tbody>
 </table>
