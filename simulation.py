@@ -43,13 +43,13 @@ class QuantumDot:
     h = 4.1357E-15
     k_B = 8.6173E-5
     T = 0.01
-    V_SD_max = uniform(0.1,0.3) # lower than 0.1 leads to very high thermal noise and results in a white image
+    V_SD_max = uniform(0.15,0.3)
     V_G_min = uniform(0.005,0.3)
     V_G_max = uniform(1,2)
     image_hw = 500 # pixel resolution of image (image_hw x image_hw)
-    volt_steps = randint(80, 150) # number of steps
-
-    V_SD = np.linspace(- V_SD_max, V_SD_max, volt_steps) # random factor added so the diamonds
+    volt_steps = randint(100, 150) # number of steps
+    V_SD_offset = uniform(0.0001, 0.001)
+    V_SD = np.linspace(- V_SD_max - V_SD_offset, V_SD_max, volt_steps) + V_SD_offset# random factor added so the diamonds
     # aren't always in the vertical centre.
 
     V_G = np.linspace(V_G_min, V_G_max, volt_steps)
@@ -377,7 +377,6 @@ class QuantumDot:
 
         I_max_abs = np.max(I_tot_abs)
         I_min_abs = np.min(I_tot_abs)
-
         I_grad_V_SD, I_grad_V_G = np.gradient(I_tot_abs)
 
         # Plot diamonds (current)
