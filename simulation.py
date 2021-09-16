@@ -43,7 +43,7 @@ class QuantumDot:
     h = 4.1357E-15
     k_B = 8.6173E-5
     T = 0.01
-    V_SD_max = uniform(0.08,0.3)
+    V_SD_max = uniform(0.1,0.3) # lower than 0.1 leads to very high thermal noise and results in a white image
     V_G_min = uniform(0.005,0.3)
     V_G_max = uniform(1,2)
     image_hw = 500 # pixel resolution of image (image_hw x image_hw)
@@ -77,7 +77,7 @@ class QuantumDot:
        """
         QuantumDot.simCount += 1
         seed(datetime.now())  # use current time as random number seed
-        self.N = range(1, 50)
+        self.N = range(1, 25)
         self.N_0 = 0
         self.I_tot = np.zeros(self.V_SD_grid.shape)
         self.diamond_starts = np.zeros((1, len(self.N)))
@@ -359,7 +359,7 @@ class QuantumDot:
             thermalNoise = np.random.normal(loc=0, scale=1, size=self.V_SD_grid.shape)
             g_0 = self.I_tot / self.V_SD_grid
             I_thermalNoise = np.sqrt(4 * self.k_B * self.e * self.T * np.abs(g_0)) * thermalNoise
-            #self.I_tot += I_thermalNoise # when I uncomment this makes the image white
+            self.I_tot += I_thermalNoise # when I uncomment this makes the image white in some cases as it is much larger than the normal current
 
             'SHOT noise implementation'
             shotNoise = np.random.normal(loc=0, scale=1, size=self.V_SD_grid.shape)
@@ -382,7 +382,7 @@ class QuantumDot:
 
         # Plot diamonds (current)
         ax.contourf(self.V_G_grid, self.V_SD_grid, I_tot_abs, cmap="seismic",
-                               levels=np.linspace(I_min_abs, I_max_abs, randint(150,500)))  # draw contours of diamonds
+                               levels=np.linspace(I_min_abs, I_max_abs, 500))  # draw contours of diamonds
 
         ax.axis('off')
 
@@ -415,12 +415,10 @@ class QuantumDot:
         ET.SubElement(size, "depth").text = "3"
 
         ET.SubElement(root, "segmented").text = "0"
-        fig.savefig(path + "images/{0}_no_bb.png".format(simulation_number), dpi=(100))  # Save training image
         for i in range(
                 len(self.N) - 1):  # need -1 as block would attempt to access index N otherwise and it doesn't exist
 
-            # Parameters in standard units
-
+            # Parameters in standard units / true values
             width = self.diamond_starts[0, i + 1] - self.diamond_starts[0, i]
             D_x = self.diamond_starts[0, i] # start of diamond
             D_y = 0
@@ -448,6 +446,7 @@ class QuantumDot:
             Q_x = D_x - DtoQ * np.cos(theta)
             Q_y = D_y - DtoQ * np.sin(theta)
 
+            # turn true values into pixel coordinates
             A_x_scaled, A_y_scaled = ax.transData.transform((A_x,A_y))
             A_y_scaled = self.image_hw - A_y_scaled
             C_x_scaled, C_y_scaled = ax.transData.transform((C_x,C_y))
@@ -457,17 +456,16 @@ class QuantumDot:
             P_x_scaled, P_y_scaled = ax.transData.transform((P_x,P_y))
             P_y_scaled = self.image_hw - P_y_scaled
 
-
-
+            # ensure bounding boxes within 10px from edge are not detected/noted
             condition_1 = (P_x_scaled < (self.image_hw - 10)) and (Q_x_scaled > 10)
             condition_2 = (C_y_scaled < (self.image_hw - 10)) and (A_y_scaled > 10)
             if (condition_1 and condition_2):
-                xy = np.array([[A_x,A_y],
-                              [P_x,P_y],
-                              [C_x,C_y],
-                              [Q_x,Q_y]])
-                p1 = patches.Polygon(xy, linewidth=1, edgecolor='g', facecolor='none')
-                ax.add_patch(p1)
+                # xy = np.array([[A_x,A_y],
+                #               [P_x,P_y],
+                #               [C_x,C_y],
+                #               [Q_x,Q_y]])
+                # p1 = patches.Polygon(xy, linewidth=1, edgecolor='g', facecolor='none')
+                # ax.add_patch(p1)
 
                 object = ET.SubElement(root, "object")
                 ET.SubElement(object, "name").text = "diamond"
@@ -499,7 +497,7 @@ class QuantumDot:
             #print("Retrying simulation of Quantum Dot", simulation_number)
             return False
         else:
-            fig.savefig(path + "images/{0}.png".format(simulation_number), dpi=(100))  # Save training image
+            fig.savefig(path + "images/{0}.png".format(simulation_number), dpi=(1000))  # Save training image
             tree = ET.ElementTree(root)
             tree.write(path + "labeltxt/{0}.xml".format(simulation_number))
             plt.close(simulation_number)
