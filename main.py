@@ -49,12 +49,18 @@ if __name__ == "__main__":
                 helper.noise = noise
                 if argument_2 > 0:
                     helper.path = "./data/train/"
-                    helper.generate_examples(argument_2) # generate training set
-                    print("Training set saved to", helper.path)
+                    try:
+                        helper.generate_examples(argument_2) # generate training set
+                        print("Training set saved to", helper.path)
+                    except:
+                        print("An error has occured. Please make sure you have closed the files you are attempting to write to.")
                 if argument_3 > 0:
                     helper.path = "./data/test/"
-                    helper.generate_examples(argument_3)  # generate test set
-                    print("Test set saved to", helper.path)
+                    try:
+                        helper.generate_examples(argument_3)  # generate test set
+                        print("Test set saved to", helper.path)
+                    except:
+                        print("An error has occured. Please make sure you have closed the files you are attempting to write to.")
 
             except (IndexError, TypeError):
                 print("Make sure to pass the required arguments."

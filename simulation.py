@@ -43,17 +43,28 @@ class QuantumDot:
     h = 4.1357E-15
     k_B = 8.6173E-5
     T = 0.01
-    V_SD_max = uniform(0.15,0.3)
-    V_G_min = uniform(0.005,0.3)
-    V_G_max = uniform(1,2)
+
+    # These following voltage parameters are chosen to prevent the following issue
+    # Previously, I had an issue where when an image of the simulation was generated the bounding boxes would be skewed
+    # The reasons for this were
+        # The number of steps/voltage values for the individual y and x axis didn't match
+        # The difference between each of the voltage values for the axis (the steps) didn't match
+    # This mean't when trying to output a 500/500 square the rectangular bounding boxes were skewed.
+
+    V_SD_max = 0.25
+    V_G_min = 0.005
+    V_G_max = 0.505
+    step_size = 0.005
+
+    DPI = 100
     image_hw = 500 # pixel resolution of image (image_hw x image_hw)
-    volt_steps = randint(100, 150) # number of steps
     V_SD_offset = uniform(0.0001, 0.001)
-    V_SD = np.linspace(- V_SD_max - V_SD_offset, V_SD_max, volt_steps) + V_SD_offset# random factor added so the diamonds
+    V_G_offset = uniform(0.00001, 0.001)
+
+    V_SD = np.linspace(- V_SD_max, V_SD_max, 100) + V_SD_offset# random factor added so the diamonds
     # aren't always in the vertical centre.
-
-    V_G = np.linspace(V_G_min, V_G_max, volt_steps)
-
+    V_G = np.arange(V_G_min, V_G_max, step_size) #+ V_G_offset
+    V_G = np.linspace(V_G_min, V_G_max, 100) + V_G_offset
     # Generate 2D array to represent possible voltage combinations
     V_SD_grid, V_G_grid = np.meshgrid(V_SD, V_G)
 
@@ -78,12 +89,12 @@ class QuantumDot:
         QuantumDot.simCount += 1
         seed(datetime.now())  # use current time as random number seed
         self.N = range(1, 25)
-        self.N_0 = 0
+        self.N_0 = 0 # I think making this non-zero offsets the bounding boxes used for object detection
         self.I_tot = np.zeros(self.V_SD_grid.shape)
         self.diamond_starts = np.zeros((1, len(self.N)))
-        self.C_S = 10E-19 * uniform(0.1, 1)  # Uniform used for some random variation
-        self.C_D = 10E-19 * uniform(0.2, 1)
-        self.C_G = 1E-18 * uniform(1, 7)
+        self.C_S = 10E-19 * uniform(0.1, 1.5)  # Uniform used for some random variation
+        self.C_D = 10E-19 * uniform(0.2, 1.5)
+        self.C_G = 1E-18 * uniform(1, 8.5)
         self.C = self.C_S + self.C_D + self.C_G
         self.E_C = (self.e ** 2) / self.C
 
@@ -262,8 +273,9 @@ class QuantumDot:
             False if no diamonds are within the voltage space (not successful)
         """
 
-        fig = plt.figure(simulation_number, figsize=(self.image_hw/100,self.image_hw/100))
+        fig = plt.figure(simulation_number, figsize=(self.image_hw/self.DPI,self.image_hw/self.DPI))
         ax = fig.add_axes([0, 0, 1, 1])
+
 
         E_N_previous = 0
         Estate_height_previous = 0  # stores previous various excited energy height above ground level
@@ -414,15 +426,17 @@ class QuantumDot:
         ET.SubElement(size, "depth").text = "3"
 
         ET.SubElement(root, "segmented").text = "0"
+        # fig.savefig(path + "images/example_image_{0}.png".format(simulation_number), dpi=(self.DPI))  # Save training image
+
         for i in range(
                 len(self.N) - 1):  # need -1 as block would attempt to access index N otherwise and it doesn't exist
 
             # Parameters in standard units / true values
             width = self.diamond_starts[0, i + 1] - self.diamond_starts[0, i]
             D_x = self.diamond_starts[0, i] # start of diamond
-            D_y = 0
+            D_y = self.V_SD_offset
             B_x = self.diamond_starts[0, i] + width # end of diamond
-            B_y = 0
+            B_y = self.V_SD_offset
             # positive grad. top-left
             A_x = (positive_slope * self.diamond_starts[0, i] - negative_slope * self.diamond_starts[0, i + 1]) / (
                    positive_slope - negative_slope)  # analytical formula derived by equating equations of lines
@@ -433,19 +447,20 @@ class QuantumDot:
                     positive_slope - negative_slope)
             C_y = positive_slope * (C_x - self.diamond_starts[0, i + 1])
 
+            # Compute relevant variables for the computation of bounding box coordinates
             theta = np.arctan(positive_slope)
-            alpha = np.abs(np.arctan(negative_slope))
+            alpha = np.abs((np.arctan(negative_slope)))
             BtoA = np.sqrt((B_x - A_x)**2 + (B_y - A_y)**2)
             DtoC = np.sqrt((C_x - D_x)**2 + (C_y - D_y)**2)
             BtoP = BtoA * np.cos(np.pi - alpha - theta)
             DtoQ = DtoC * np.cos(np.pi - alpha - theta)
             P_x = B_x + BtoP * np.cos(theta)
             P_y = B_y + BtoP * np.sin(theta)
-
             Q_x = D_x - DtoQ * np.cos(theta)
             Q_y = D_y - DtoQ * np.sin(theta)
 
-            # turn true values into pixel coordinates
+
+            # turn true values of bounding box coordinates into pixel coordinates
             A_x_scaled, A_y_scaled = ax.transData.transform((A_x,A_y))
             A_y_scaled = self.image_hw - A_y_scaled
             C_x_scaled, C_y_scaled = ax.transData.transform((C_x,C_y))
@@ -455,16 +470,19 @@ class QuantumDot:
             P_x_scaled, P_y_scaled = ax.transData.transform((P_x,P_y))
             P_y_scaled = self.image_hw - P_y_scaled
 
+
             # ensure bounding boxes within 10px from edge are not detected/noted
-            condition_1 = (P_x_scaled < (self.image_hw - 10)) and (Q_x_scaled > 10)
-            condition_2 = (C_y_scaled < (self.image_hw - 10)) and (A_y_scaled > 10)
+            condition_1 = (P_x_scaled < (self.image_hw)) and (Q_x_scaled > 0)
+            condition_2 = (C_y_scaled < (self.image_hw)) and (A_y_scaled > 0)
             if (condition_1 and condition_2):
+
                 # xy = np.array([[A_x,A_y],
                 #               [P_x,P_y],
                 #               [C_x,C_y],
                 #               [Q_x,Q_y]])
-                # p1 = patches.Polygon(xy, linewidth=1, edgecolor='g', facecolor='none')
-                # ax.add_patch(p1)
+                # rect = patches.Polygon(xy, linewidth=1, edgecolor='g', facecolor='none')
+                # ax.add_patch(rect)
+
 
                 object = ET.SubElement(root, "object")
                 ET.SubElement(object, "name").text = "diamond"
@@ -496,9 +514,9 @@ class QuantumDot:
             #print("Retrying simulation of Quantum Dot", simulation_number)
             return False
         else:
-            fig.savefig(path + "images/{0}.png".format(simulation_number), dpi=(1000))  # Save training image
+            fig.savefig(path + "images/example_image_{0}_bb.png".format(simulation_number), dpi=(self.DPI))  # Save training image
             tree = ET.ElementTree(root)
-            tree.write(path + "labeltxt/{0}.xml".format(simulation_number))
+            tree.write(path + "labeltxt/example_image_{0}.xml".format(simulation_number))
             plt.close(simulation_number)
             return True
 
