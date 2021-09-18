@@ -51,22 +51,32 @@ class QuantumDot:
         # The difference between each of the voltage values for the axis (the steps) didn't match
     # This mean't when trying to output a 500/500 square the rectangular bounding boxes were skewed.
 
-    V_SD_max = 0.25
-    V_G_min = 0.005
-    V_G_max = 0.505
+    V_SD_max = 0.2
+    V_G_min = 0.02
+    V_G_max = 0.42
     step_size = 0.005
 
     DPI = 100
     image_hw = 500 # pixel resolution of image (image_hw x image_hw)
-    V_SD_offset = uniform(0.0001, 0.001)
-    V_G_offset = uniform(0.00001, 0.001)
+    V_SD_offset = uniform(0.00001, 0.0001)
+    V_G_offset = uniform(0.00001, 0.0001)
+
+    # We need this otherwise the plot axes get shifted and there is whitespace
+    V_G_max -= V_G_offset
+    V_G_min -= V_G_offset
+    V_SD_max -= V_SD_offset
+
 
     V_SD = np.linspace(- V_SD_max, V_SD_max, 100) + V_SD_offset# random factor added so the diamonds
+    # V_SD = np.arange(- V_SD_max, V_SD_max, step_size) + V_SD_offset# random factor added so the diamonds
     # aren't always in the vertical centre.
-    V_G = np.arange(V_G_min, V_G_max, step_size) #+ V_G_offset
+
     V_G = np.linspace(V_G_min, V_G_max, 100) + V_G_offset
+    # V_G = np.arange(V_G_min, V_G_max, step_size) #+ V_G_offset
+
     # Generate 2D array to represent possible voltage combinations
     V_SD_grid, V_G_grid = np.meshgrid(V_SD, V_G)
+
 
     mu_S = - e * V_SD_grid  # source electrochemical potential energy
 
@@ -92,9 +102,9 @@ class QuantumDot:
         self.N_0 = 0 # I think making this non-zero offsets the bounding boxes used for object detection
         self.I_tot = np.zeros(self.V_SD_grid.shape)
         self.diamond_starts = np.zeros((1, len(self.N)))
-        self.C_S = 10E-19 * uniform(0.1, 1.5)  # Uniform used for some random variation
-        self.C_D = 10E-19 * uniform(0.2, 1.5)
-        self.C_G = 1E-18 * uniform(1, 8.5)
+        self.C_S = 10E-19 * uniform(0.1, 2)  # Uniform used for some random variation
+        self.C_D = 10E-19 * uniform(0.2, 2)
+        self.C_G = 1E-18 * uniform(1, 9)
         self.C = self.C_S + self.C_D + self.C_G
         self.E_C = (self.e ** 2) / self.C
 
@@ -426,7 +436,7 @@ class QuantumDot:
         ET.SubElement(size, "depth").text = "3"
 
         ET.SubElement(root, "segmented").text = "0"
-        # fig.savefig(path + "images/example_image_{0}.png".format(simulation_number), dpi=(self.DPI))  # Save training image
+        fig.savefig(path + "images/example_image_{0}.png".format(simulation_number), dpi=(self.DPI))  # Save training image
 
         for i in range(
                 len(self.N) - 1):  # need -1 as block would attempt to access index N otherwise and it doesn't exist
@@ -476,12 +486,12 @@ class QuantumDot:
             condition_2 = (C_y_scaled < (self.image_hw)) and (A_y_scaled > 0)
             if (condition_1 and condition_2):
 
-                # xy = np.array([[A_x,A_y],
-                #               [P_x,P_y],
-                #               [C_x,C_y],
-                #               [Q_x,Q_y]])
-                # rect = patches.Polygon(xy, linewidth=1, edgecolor='g', facecolor='none')
-                # ax.add_patch(rect)
+                xy = np.array([[A_x,A_y],
+                              [P_x,P_y],
+                              [C_x,C_y],
+                              [Q_x,Q_y]])
+                rect = patches.Polygon(xy, linewidth=1, edgecolor='g', facecolor='none')
+                ax.add_patch(rect)
 
 
                 object = ET.SubElement(root, "object")
