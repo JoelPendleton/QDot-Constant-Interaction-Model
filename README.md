@@ -5,6 +5,12 @@ Software to simulate single quantum dot systems, using the constant interaction 
 To install the required environment install anaconda and run the following commands:
 ```conda env create -f environment.yml``` and then ```conda activate qdot-simulation```
 
+If this doesnt work install NumPy and Matplotlib using the following
+    ```
+    conda install numpy
+    conda install -c conda-forge matplotlib
+    ```
+
 
 **simulation.py** generates coulomb diamonds for randomised single quantum dot systems, and it also outputs the respective edges of each diamond. 
 This code was developed to generate training data for a YOLO object localisation algorithm, which could be further utilised to perform automated read-outs of the paramters of coulomb diamonds.
