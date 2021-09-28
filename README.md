@@ -5,7 +5,7 @@ Software to simulate single quantum dot systems, using the constant interaction 
 To install the required environment install anaconda and run the following commands:
 ```conda env create -f environment.yml``` and then ```conda activate qdot-simulation```
 
-If this doesnt work install NumPy and Matplotlib using the following
+If this does not work install NumPy and Matplotlib using the following:
     ```
     conda install numpy
     conda install -c conda-forge matplotlib
