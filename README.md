@@ -2,22 +2,25 @@
 Software to simulate single quantum dot systems, using the constant interaction model. Theory of model is described in [Spins in few-electron quantum dots
 ](https://arxiv.org/pdf/cond-mat/0610433.pdf)
 
+Video explaining code: [YouTube](https://youtu.be/ryQbJojIjAQ)
+
 To install the required environment install anaconda and run the following commands:
 ```conda env create -f environment.yml``` and then ```conda activate qdot-simulation```
 
 If this does not work install NumPy and Matplotlib using the following:
-    ```
-    conda install numpy
-    conda install -c conda-forge matplotlib
-    ```
-
+  ```
+  conda install numpy
+  conda install -c conda-forge matplotlib
+  ```
 
 **simulation.py** generates coulomb diamonds for randomised single quantum dot systems, and it also outputs the respective edges of each diamond. 
 This code was developed to generate training data for a YOLO object localisation algorithm, which could be further utilised to perform automated read-outs of the paramters of coulomb diamonds.
 
 
 The software has the following usage:
-`python main.py [-help | -simulate] [<training-size>] [<validation-size>] [--noise]`
+  ```
+  python main.py [-help | -simulate] [<training-size>] [<validation-size>] [--noise]
+  ```
 
 - The **-simulate** flag tells the program that you want to generate some simulations. 
     - In this case you need to pass, **<training-size>** and **<validation-size>**. These tell the program the size of
@@ -27,7 +30,9 @@ The software has the following usage:
 - You should pass the **-help** flag if you require instructions on how to use the flags.
 
 E.g. 
-```python main.py -simulate 100 20 --noise```
+  ```
+  python main.py -simulate 100 20 --noise
+  ```
 This generates a training set of size 100 and a validation with size 20,
 with noise.
 
