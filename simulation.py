@@ -436,7 +436,7 @@ class QuantumDot:
         ET.SubElement(size, "depth").text = "3"
 
         ET.SubElement(root, "segmented").text = "0"
-        fig.savefig(path + "images/example_image_{0}.png".format(simulation_number), dpi=(self.DPI))  # Save training image
+
 
         for i in range(
                 len(self.N) - 1):  # need -1 as block would attempt to access index N otherwise and it doesn't exist
@@ -490,8 +490,8 @@ class QuantumDot:
                               [P_x,P_y],
                               [C_x,C_y],
                               [Q_x,Q_y]])
-                rect = patches.Polygon(xy, linewidth=1, edgecolor='g', facecolor='none')
-                ax.add_patch(rect)
+                # rect = patches.Polygon(xy, linewidth=1, edgecolor='g', facecolor='none')
+                # ax.add_patch(rect)
 
 
                 object = ET.SubElement(root, "object")
@@ -524,9 +524,9 @@ class QuantumDot:
             #print("Retrying simulation of Quantum Dot", simulation_number)
             return False
         else:
-            fig.savefig(path + "images/example_image_{0}_bb.png".format(simulation_number), dpi=(self.DPI))  # Save training image
+            fig.savefig(path + "images/{0}.png".format(simulation_number), dpi=(self.DPI))  # Save training image
             tree = ET.ElementTree(root)
-            tree.write(path + "labeltxt/example_image_{0}.xml".format(simulation_number))
+            tree.write(path + "labeltxt/{0}.xml".format(simulation_number))
             plt.close(simulation_number)
             return True
 
