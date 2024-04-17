@@ -2,8 +2,6 @@
 Software to simulate single quantum dot systems, using the constant interaction model. Theory of model is described in [Spins in few-electron quantum dots
 ](https://arxiv.org/pdf/cond-mat/0610433.pdf)
 
-Video explaining code: [YouTube](https://youtu.be/ryQbJojIjAQ)
-
 To install the required environment install anaconda and run the following commands:
 ```conda env create -f environment.yml``` and then ```conda activate qdot-simulation```
 
